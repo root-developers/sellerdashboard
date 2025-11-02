@@ -82,7 +82,7 @@ const AppHeaderDropdown = () => {
         {!user || !user.token ? (
           <CDropdownItem as={Link} to="/login">
             <CIcon icon={cilUser} className="me-2" />
-            Profile
+            Login
           </CDropdownItem>
         ) : (
           <CDropdownItem as={Link} to="/profile">
