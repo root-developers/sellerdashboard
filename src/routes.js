@@ -51,10 +51,23 @@ const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
+// Management
+const Management = React.lazy(() => import('./views/management/Management'))
+const Products = React.lazy(() => import('./views/management/products/Products'))
+const Orders = React.lazy(() => import('./views/management/orders/Orders'))
+const Finance = React.lazy(() => import('./views/management/finance/Finance'))
+const Revenue = React.lazy(() => import('./views/management/revenue/Revenue'))
+const ContactUs = React.lazy(() => import('./views/management/contact/ContactUs'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/management', name: 'Management', element: Management, exact: true },
+  { path: '/management/products', name: 'Products', element: Products },
+  { path: '/management/orders', name: 'Orders', element: Orders },
+  { path: '/management/finance', name: 'Finance', element: Finance },
+  { path: '/management/revenue', name: 'Revenue', element: Revenue },
+  { path: '/management/contact', name: 'Contact Us', element: ContactUs },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
