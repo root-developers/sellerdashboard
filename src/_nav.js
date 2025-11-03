@@ -52,8 +52,8 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Finance',
-        to: '/management/finance',
+        name: 'Profit',
+        to: '/management/profit',
         icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
       },
       {
