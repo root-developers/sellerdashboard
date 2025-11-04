@@ -9,6 +9,7 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
+    CForm,
     CFormInput,
     CRow,
     CTable,
@@ -464,7 +465,7 @@ const Orders = () => {
             </CCard>
 
             {/* Update Status Modal */}
-            <CModal visible={showStatusModal} onClose={handleCloseModal} size="lg">
+            <CModal visible={showStatusModal} onClose={handleCloseModal}>
                 <CModalHeader>
                     <CModalTitle>Update Order Status</CModalTitle>
                 </CModalHeader>
@@ -477,42 +478,48 @@ const Orders = () => {
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
                             <hr />
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="statusSelect">New Status *</CFormLabel>
-                                <select
-                                    id="statusSelect"
-                                    className="form-select"
-                                    value={statusUpdate.status}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
-                                >
-                                    <option value="">Select Status</option>
-                                    <option value={ORDER_STATUS.PENDING}>Pending</option>
-                                    <option value={ORDER_STATUS.CONFIRMED}>Confirmed</option>
-                                    <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
-                                    <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
-                                    <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="trackingNumber">Tracking Number</CFormLabel>
-                                <CFormInput
-                                    type="text"
-                                    id="trackingNumber"
-                                    placeholder="Enter tracking number"
-                                    value={statusUpdate.tracking_number}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, tracking_number: e.target.value })}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="notes">Notes</CFormLabel>
-                                <CFormTextarea
-                                    id="notes"
-                                    rows="3"
-                                    placeholder="Add any notes or comments"
-                                    value={statusUpdate.notes}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, notes: e.target.value })}
-                                />
-                            </div>
+                            <CForm>
+                                <CRow className="g-3">
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="statusSelect">
+                                            New Status <span className="text-danger">*</span>
+                                        </CFormLabel>
+                                        <select
+                                            id="statusSelect"
+                                            className="form-select"
+                                            value={statusUpdate.status}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
+                                        >
+                                            <option value="">Select Status</option>
+                                            <option value={ORDER_STATUS.PENDING}>Pending</option>
+                                            <option value={ORDER_STATUS.CONFIRMED}>Confirmed</option>
+                                            <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
+                                            <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
+                                            <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
+                                        </select>
+                                    </CCol>
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="trackingNumber">Tracking Number <span className="text-danger">*</span></CFormLabel>
+                                        <CFormInput
+                                            type="text"
+                                            id="trackingNumber"
+                                            placeholder="Enter tracking number"
+                                            value={statusUpdate.tracking_number}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, tracking_number: e.target.value })}
+                                        />
+                                    </CCol>
+                                    <CCol xs={12}>
+                                        <CFormLabel htmlFor="notes">Notes</CFormLabel>
+                                        <CFormTextarea
+                                            id="notes"
+                                            rows="3"
+                                            placeholder="Add any notes or comments"
+                                            value={statusUpdate.notes}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, notes: e.target.value })}
+                                        />
+                                    </CCol>
+                                </CRow>
+                            </CForm>
                         </div>
                     )}
                 </CModalBody>
