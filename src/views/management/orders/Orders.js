@@ -83,44 +83,37 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
     <CTableRow>
         <CTableDataCell>
             <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-                {order.orderId}
+                {order.order_number}
             </span>
         </CTableDataCell>
         <CTableDataCell>
             <div className="d-flex align-items-center">
                 <CAvatar size="sm" color="primary" textColor="white" className="me-2">
-                    {order.customerName[0].toUpperCase()}
+                    {order.buyer_first_name ? order.buyer_first_name[0].toUpperCase() : '?'}
                 </CAvatar>
                 <span style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' }}>
-                    {order.customerName}
+                    {order.buyer_first_name ? order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}` : `${order.buyer_first_name}` : 'Buyer'}
                 </span>
             </div>
         </CTableDataCell>
         <CTableDataCell>
             <div>
                 <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                    {order.email}
+                    {order.buyer_email}
                 </div>
                 <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                    {order.phone}
+                    {order.phone || ''}
                 </div>
-            </div>
-        </CTableDataCell>
-        <CTableDataCell>
-            <div className="d-flex align-items-center">
-                <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
-                    {order.marketplace}
-                </span>
             </div>
         </CTableDataCell>
         <CTableDataCell>
             <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
-                {order.items}
+                {order.product_name} (Qty: {order.quantity})
             </span>
         </CTableDataCell>
         <CTableDataCell>
             <span style={{ fontSize: '14px', fontWeight: '600', color: '#2c3e50' }}>
-                Rs. {order.totalAmount.toLocaleString()}
+                Rs. {Number(order.total_price).toLocaleString()}
             </span>
         </CTableDataCell>
         <CTableDataCell>{getStatusBadge(order.status)}</CTableDataCell>
@@ -130,7 +123,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
                     <CIcon icon={cilOptions} />
                 </CDropdownToggle>
                 <CDropdownMenu>
-                    <CDropdownItem 
+                    <CDropdownItem
                         onClick={() => onUpdateStatus(order)}
                         style={{ fontSize: '13px', fontWeight: '400' }}
                     >
@@ -145,7 +138,7 @@ OrderRow.displayName = 'OrderRow'
 
 const Orders = () => {
     const [searchTerm, setSearchTerm] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [showStatusModal, setShowStatusModal] = useState(false)
@@ -156,111 +149,68 @@ const Orders = () => {
     })
 
     // Orders data from API
-    const [orders, setOrders] = useState([
-        {
-            id: '1024',
-            orderId: 'ORD-1024',
-            customerName: 'A',
-            email: 'a@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Shopee',
-            items: 3,
-            totalAmount: 2460,
-            status: ORDER_STATUS.DELIVERED,
-            tracking_number: 'TRK-123456789',
-            notes: 'Order delivered successfully',
-            orderDate: 'Oct 28, 2024',
-        },
-        {
-            id: '1025',
-            orderId: 'ORD-1025',
-            customerName: 'B',
-            email: 'b@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Tokopedia',
-            items: 2,
-            totalAmount: 3456,
-            status: ORDER_STATUS.CONFIRMED,
-            tracking_number: '',
-            notes: 'Order confirmed, preparing for shipment',
-            orderDate: 'Oct 29, 2024',
-        },
-        {
-            id: '1026',
-            orderId: 'ORD-1026',
-            customerName: 'C',
-            email: 'c@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Amazon',
-            items: 5,
-            totalAmount: 4567,
-            status: ORDER_STATUS.SHIPPED,
-            tracking_number: 'TRK-987654321',
-            notes: 'Order shipped via express delivery',
-            orderDate: 'Oct 30, 2024',
-        },
-        {
-            id: '1029',
-            orderId: 'ORD-1029',
-            customerName: 'D',
-            email: 'd@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Tokopedia',
-            items: 2,
-            totalAmount: 1234,
-            status: ORDER_STATUS.PENDING,
-            tracking_number: '',
-            notes: '',
-            orderDate: 'Nov 1, 2024',
-        },
-    ])
+    const [orders, setOrders] = useState([])
 
     // Fetch orders from API on component mount
-    // useEffect(() => {
-    //     fetchOrders()
-    // }, [])
+    useEffect(() => {
+        fetchOrders()
+    }, [])
 
     // GET /seller/orders - Fetch all seller orders
-    // const fetchOrders = async () => {
-    //     try {
-    //         setLoading(true)
-    //         setError(null)
-    //         const response = await axios.get(
-    //             `${Config.apiUrl}/orders/seller/orders`,
-    //             Config.AxiosConfig
-    //         )
+    const fetchOrders = async () => {
+        try {
+            setLoading(true)
+            setError(null)
+            const response = await axios.get(
+                `${Config.apiUrl}/orders/seller/orders`,
+                Config.AxiosConfig
+            )
 
-    //         if (response.data && response.data.success) {
-    //             const ordersData = response.data.data || response.data.orders || []
-    //             setOrders(ordersData)
-    //         } else {
-    //             setOrders([])
-    //             setError('Failed to fetch orders')
-    //         }
-    //     } catch (err) {
-    //         console.error('Error fetching orders:', err)
-    //         setError(err.response?.data?.message || err.message || 'Failed to load orders')
-    //         setOrders([])
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // }
+            if (response.data && response.data.success) {
+                const ordersData = response.data.data.orders || []
+                setOrders(ordersData)
+            } else {
+                setOrders([])
+                setError('Failed to fetch orders')
+            }
+        } catch (err) {
+            console.error('Error fetching orders:', err)
+            setError(err.response?.data?.message || err.message || 'Failed to load orders')
+            setOrders([])
+        } finally {
+            setLoading(false)
+        }
+    }
 
-    const stats = useMemo(() => ({
-        totalOrders: orders.length,
-        totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
-        pendingOrders: orders.filter(o => o.status === ORDER_STATUS.PENDING).length,
-        avgOrderValue: orders.length > 0
-            ? orders.reduce((sum, order) => sum + order.totalAmount, 0) / orders.length
-            : 0,
-    }), [orders])
+    const stats = useMemo(() => {
+        const validOrders = Array.isArray(orders) ? orders : [];
+
+        // Create a Set of unique order IDs to avoid double-counting
+        const uniqueOrderIds = new Set(validOrders.map(o => o.order_id));
+
+        // Calculate revenue from unique orders only
+        const uniqueOrders = Array.from(uniqueOrderIds).map(orderId => {
+            return validOrders.find(o => o.order_id === orderId);
+        });
+
+        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
+
+        return {
+            totalOrders: uniqueOrderIds.size, // Count unique orders
+            totalRevenue: totalRevenue,
+            pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
+            avgOrderValue: uniqueOrderIds.size > 0
+                ? totalRevenue / uniqueOrderIds.size
+                : 0,
+        }
+    }, [orders])
 
 
     // PUT /:id/status - Update order status
     const updateOrderStatus = async (orderId) => {
         try {
             const response = await axios.put(
-                `${Config.apiUrl}/orders/${orderId}/status`,
+                `${Config.apiUrl}/orders/${selectedOrder.order_id}/status`,
                 {
                     status: statusUpdate.status,
                     tracking_number: statusUpdate.tracking_number,
@@ -273,7 +223,7 @@ const Orders = () => {
                 // Update local state
                 setOrders(prevOrders =>
                     prevOrders.map(order =>
-                        order.id === orderId
+                        order.order_id === orderId
                             ? { ...order, ...statusUpdate }
                             : order
                     )
@@ -310,9 +260,9 @@ const Orders = () => {
     // Handle status update submission
     const handleStatusUpdateSubmit = useCallback(() => {
         if (!selectedOrder || !statusUpdate.status) return
-        
+
         // Call API to update order status
-        updateOrderStatus(selectedOrder.id)
+        updateOrderStatus(selectedOrder.order_id)
     }, [selectedOrder, statusUpdate])
 
     // Get status badge component - Memoized callback
@@ -337,14 +287,16 @@ const Orders = () => {
 
     // Filtered orders with search
     const filteredOrders = useMemo(() => {
-        if (!searchTerm.trim()) return orders
+        const validOrders = Array.isArray(orders) ? orders : [];
+        if (!searchTerm.trim()) return validOrders;
 
         const searchLower = searchTerm.toLowerCase()
-        return orders.filter((order) =>
-            (order.customerName || '').toLowerCase().includes(searchLower) ||
-            (order.orderId || '').toLowerCase().includes(searchLower) ||
-            (order.email || '').toLowerCase().includes(searchLower) ||
-            (order.marketplace || '').toLowerCase().includes(searchLower)
+        return validOrders.filter((order) =>
+            (order.buyer_first_name || '').toLowerCase().includes(searchLower) ||
+            (order.buyer_last_name || '').toLowerCase().includes(searchLower) ||
+            (order.order_number || '').toLowerCase().includes(searchLower) ||
+            (order.buyer_email || '').toLowerCase().includes(searchLower) ||
+            (order.product_name || '').toLowerCase().includes(searchLower)
         )
     }, [orders, searchTerm])
 
@@ -452,13 +404,10 @@ const Orders = () => {
                                         Order ID
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Customer Name
+                                        Buyer Name
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
                                         Contact
-                                    </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Marketplace
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
                                         Items
@@ -476,7 +425,7 @@ const Orders = () => {
                                 {filteredOrders.length > 0 ? (
                                     filteredOrders.map((order) => (
                                         <OrderRow
-                                            key={order.id}
+                                            key={`${order.order_id}-${order.product_id}`}
                                             order={order}
                                             onUpdateStatus={handleUpdateStatus}
                                             getStatusBadge={getStatusBadge}
@@ -484,8 +433,8 @@ const Orders = () => {
                                     ))
                                 ) : (
                                     <CTableRow>
-                                        <CTableDataCell 
-                                            colSpan="8" 
+                                        <CTableDataCell
+                                            colSpan="8"
                                             className="text-center py-4"
                                             style={{ fontSize: '14px', fontWeight: '400' }}
                                         >
@@ -508,8 +457,8 @@ const Orders = () => {
                     {selectedOrder && (
                         <div>
                             <div className="mb-3">
-                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.orderId}</p>
-                                <p className="mb-1"><strong>Customer:</strong> {selectedOrder.customerName}</p>
+                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_id}</p>
+                                <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p>
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
                             <hr />
