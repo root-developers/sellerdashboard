@@ -64,7 +64,7 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
   }
 
   const imageUrl =
-    product.images?.[0]?.url || product.image || 'https://via.placeholder.com/100'
+    product.images?.[0]?.image_url || product.image || 'https://via.placeholder.com/100'
 
   return (
     <CTableRow>
