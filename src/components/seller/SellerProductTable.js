@@ -6,7 +6,7 @@ import {
   CTableHeaderCell,
   CTableBody,
 } from '@coreui/react'
-import SellerProductTableRow from './sellerProductTableRow'
+import SellerProductTableRow from './SellerProductTableRow'
 
 const SellerProductTable = ({ products, onRefresh }) => {
   const finalProducts = products.data?.products || products || []
