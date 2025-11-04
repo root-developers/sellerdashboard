@@ -137,7 +137,7 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
       </CTableDataCell>
       <CTableDataCell className="text-center">
         <CDropdown alignment="end">
-          <CDropdownToggle color="ghost" size="sm" disabled={isDeleting || isEditing}>
+          <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting || isEditing}>
             {isDeleting || isEditing ? (
               <CSpinner size="sm" />
             ) : (
