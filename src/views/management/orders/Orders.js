@@ -132,7 +132,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
         <CTableDataCell>{getStatusBadge(order.status)}</CTableDataCell>
         <CTableDataCell>
             <CDropdown alignment="end">
-                <CDropdownToggle color="ghost" size="sm">
+                <CDropdownToggle color="ghost" size="sm" caret={false}>
                     <CIcon icon={cilOptions} />
                 </CDropdownToggle>
                 <CDropdownMenu>
