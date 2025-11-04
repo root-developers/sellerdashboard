@@ -107,6 +107,18 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
             </div>
         </CTableDataCell>
         <CTableDataCell>
+            <img
+                src={order.product_image?.[0]?.product_image || order.product_image || 'https://via.placeholder.com/100'}
+                alt={order.product_name}
+                style={{
+                    width: '48px',
+                    height: '48px',
+                    objectFit: 'contain',
+                    borderRadius: '6px',
+                }}
+            />
+        </CTableDataCell>
+        <CTableDataCell>
             <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
                 {order.product_name} (Qty: {order.quantity})
             </span>
@@ -410,7 +422,10 @@ const Orders = () => {
                                         Contact
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Items
+                                        Product Image
+                                    </CTableHeaderCell>
+                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                        Product Name
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
                                         Total Amount
