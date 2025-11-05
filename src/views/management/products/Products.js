@@ -9,6 +9,9 @@ import {
   CRow,
   CSpinner,
   CCollapse,
+  CCardFooter,
+  CPagination,
+  CPaginationItem
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPlus, cilX } from '@coreui/icons'
@@ -21,19 +24,21 @@ const Products = () => {
   const user = useSelector((state) => state.UserReducer.user)
 
   const [products, setProducts] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   // Fetch seller's products
   useEffect(() => {
-    fetchSellerProducts()
-  }, [refreshTrigger])
+    fetchSellerProducts(currentPage)
+  }, [refreshTrigger, currentPage])
 
-  const fetchSellerProducts = async () => {
+  const fetchSellerProducts = async (Page = 1) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`${Config.apiUrl}/products/seller/my-products`, {
+      const response = await fetch(`${Config.apiUrl}/products/seller/my-products?page=${Page}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +51,9 @@ const Products = () => {
       }
 
       const data = await response.json()
-      setProducts(data.products || data || [])
+      // setProducts(data.products || data || [])
+      setProducts(data.data.products || [])
+      setPagination(data.data.pagination || null)
       toast.success('Products loaded successfully')
     } catch (error) {
       console.error('Error fetching products:', error)
@@ -60,6 +67,14 @@ const Products = () => {
     setShowAddForm(false)
     setRefreshTrigger((prev) => prev + 1)
     toast.success('Product added successfully!')
+  }
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber < 1 || (pagination && pageNumber > pagination.total_pages) || pageNumber === currentPage) {
+      return
+    }
+    // Set the new page, which will trigger the useEffect to re-fetch
+    setCurrentPage(pageNumber)
   }
 
   return (
@@ -98,7 +113,7 @@ const Products = () => {
           <CCard className="mb-4">
             <CCardHeader>
               <h4 className="mb-0 fw-semibold" style={{ fontSize: '18px', letterSpacing: '-0.02em' }}>
-                My Products
+                My Products({pagination ? pagination.total_items : 0})
               </h4>
             </CCardHeader>
             <CCardBody>
@@ -116,6 +131,35 @@ const Products = () => {
                 />
               )}
             </CCardBody>
+            {pagination && pagination.total_pages > 1 && (
+              <CCardFooter>
+                <CPagination align="end" aria-label="Page navigation">
+                  <CPaginationItem
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    aria-label="Previous"
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                  </CPaginationItem>
+                  {[...Array(pagination.total_pages).keys()].map((page) => (
+                    <CPaginationItem
+                      key={page + 1}
+                      active={page + 1 === currentPage}
+                      onClick={() => handlePageChange(page + 1)}
+                    >
+                      {page + 1}
+                    </CPaginationItem>
+                  ))}
+                  <CPaginationItem
+                    disabled={currentPage === pagination.total_pages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    aria-label="Next"
+                  >
+                    <span aria-hidden="true">&raquo;</span>
+                  </CPaginationItem>
+                </CPagination>
+              </CCardFooter>
+            )}
           </CCard>
         </CCol>
       </CRow>
