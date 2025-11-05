@@ -7,6 +7,7 @@ import {
     CButton,
     CCard,
     CCardBody,
+    CCardFooter,
     CCardHeader,
     CCol,
     CForm,
@@ -30,6 +31,8 @@ import {
     CModalFooter,
     CFormLabel,
     CFormTextarea,
+    CPagination,
+    CPaginationItem
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -164,32 +167,39 @@ const Orders = () => {
     // Orders data from API
     const [orders, setOrders] = useState([])
 
+    // Pagination state
+    const [pagination, setPagination] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
+
     // Fetch orders from API on component mount
     useEffect(() => {
-        fetchOrders()
-    }, [])
+        fetchOrders(currentPage)
+    }, [currentPage]) //Re-fetch when currentPage changes
 
     // GET /seller/orders - Fetch all seller orders
-    const fetchOrders = async () => {
+    const fetchOrders = async (page = 1) => {
         try {
             setLoading(true)
             setError(null)
             const response = await axios.get(
-                `${Config.apiUrl}/orders/seller/orders`,
+                `${Config.apiUrl}/orders/seller/orders?page=${page}`,
                 Config.AxiosConfig
             )
 
             if (response.data && response.data.success) {
                 const ordersData = response.data.data.orders || []
                 setOrders(ordersData)
+                setPagination(response.data.data.pagination || null) // Set pagination data from api response
             } else {
                 setOrders([])
+                setPagination(null) // Reset pagination on error
                 setError('Failed to fetch orders')
             }
         } catch (err) {
             console.error('Error fetching orders:', err)
             setError(err.response?.data?.message || err.message || 'Failed to load orders')
             setOrders([])
+            setPagination(null) // Reset pagination on error
         } finally {
             setLoading(false)
         }
@@ -197,6 +207,8 @@ const Orders = () => {
 
     const stats = useMemo(() => {
         const validOrders = Array.isArray(orders) ? orders : [];
+
+        const totalOrderCount = pagination ? pagination.total_items : 0;
 
         // Create a Set of unique order IDs to avoid double-counting
         const uniqueOrderIds = new Set(validOrders.map(o => o.order_id));
@@ -209,14 +221,14 @@ const Orders = () => {
         const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
 
         return {
-            totalOrders: uniqueOrderIds.size, // Count unique orders
+            totalOrders: totalOrderCount, // Count unique orders
             totalRevenue: totalRevenue,
             pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
             avgOrderValue: uniqueOrderIds.size > 0
                 ? totalRevenue / uniqueOrderIds.size
                 : 0,
         }
-    }, [orders])
+    }, [orders, pagination])
 
 
     // PUT /:id/status - Update order status
@@ -312,6 +324,13 @@ const Orders = () => {
             (order.product_name || '').toLowerCase().includes(searchLower)
         )
     }, [orders, searchTerm])
+
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber < 1 || pageNumber > pagination.total_pages || pageNumber === currentPage) {
+            return
+        }
+        setCurrentPage(pageNumber)
+    }
 
     if (loading) {
         return (
@@ -462,6 +481,36 @@ const Orders = () => {
                         </CTable>
                     </div>
                 </CCardBody>
+                {/* Pagination Footer */}
+                {pagination && pagination.total_pages > 1 && (
+                    <CCardFooter>
+                        <CPagination align="end" aria-label="Page navigation">
+                            <CPaginationItem
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                aria-label="Previous"
+                            >
+                                <span aria-hidden="true">&laquo;</span>
+                            </CPaginationItem>
+                            {[...Array(pagination.total_pages).keys()].map((page) => (
+                                <CPaginationItem
+                                    key={page + 1}
+                                    active={page + 1 === currentPage}
+                                    onClick={() => handlePageChange(page + 1)}
+                                >
+                                    {page + 1}
+                                </CPaginationItem>
+                            ))}
+                            <CPaginationItem
+                                disabled={currentPage === pagination.total_pages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                aria-label="Next"
+                            >
+                                <span aria-hidden="true">&raquo;</span>
+                            </CPaginationItem>
+                        </CPagination>
+                    </CCardFooter>
+                )}
             </CCard>
 
             {/* Update Status Modal */}
