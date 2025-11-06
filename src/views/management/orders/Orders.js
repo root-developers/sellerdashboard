@@ -182,7 +182,7 @@ const Orders = () => {
             setLoading(true)
             setError(null)
             const response = await axios.get(
-                `${Config.apiUrl}/orders/seller/orders?page=${page}`,
+                `${Config.baseUrl}/orders/seller/orders?page=${page}`,
                 Config.AxiosConfig
             )
 
@@ -235,7 +235,7 @@ const Orders = () => {
     const updateOrderStatus = async (orderId) => {
         try {
             const response = await axios.put(
-                `${Config.apiUrl}/orders/${selectedOrder.order_id}/status`,
+                `${Config.baseUrl}/orders/${selectedOrder.order_id}/status`,
                 {
                     status: statusUpdate.status,
                     tracking_number: statusUpdate.tracking_number,
