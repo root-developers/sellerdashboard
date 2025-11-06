@@ -38,7 +38,7 @@ const Products = () => {
   const fetchSellerProducts = async (Page = 1) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`${Config.apiUrl}/products/seller/my-products?page=${Page}`, {
+      const response = await fetch(`${Config.baseUrl}/products/seller/my-products?page=${Page}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
