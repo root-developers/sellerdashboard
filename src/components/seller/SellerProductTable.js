@@ -36,7 +36,7 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
               Stock Status
             </CTableHeaderCell>
             <CTableHeaderCell >
-              Category ID
+              Category Name
             </CTableHeaderCell>
             <CTableHeaderCell >
               SKU

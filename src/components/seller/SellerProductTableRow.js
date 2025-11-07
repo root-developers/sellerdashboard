@@ -127,7 +127,7 @@ const handleEdit = () => {
       </CTableDataCell>
       <CTableDataCell>
         <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-          {product.category_id || '-'}
+          {product.category.name || '-'}
         </span>
       </CTableDataCell>
       <CTableDataCell>
