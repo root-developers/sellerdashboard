@@ -129,7 +129,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                 <CTableDataCell>
                     <span style={subTextStyle}>{order.order_number}</span>
                 </CTableDataCell>
-                <CTableDataCell>
+                {/* <CTableDataCell>
                     <div className="d-flex align-items-center">
                         <CAvatar size="sm" color="primary" textColor="white" className="me-2">
                             {order.buyer_first_name ? order.buyer_first_name[0].toUpperCase() : '?'}
@@ -138,7 +138,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                             {order.buyer_first_name ? order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}` : `${order.buyer_first_name}` : 'Buyer'}
                         </span>
                     </div>
-                </CTableDataCell>
+                </CTableDataCell> */}
                 <CTableDataCell>
                     <div style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4' }}>
                         <div>{order.buyer_email}</div>
@@ -180,8 +180,8 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
 
             {/* Collapsible Product Details Row */}
             <CTableRow className="p-0">
-                {/* 9 columns for product details */}
-                <CTableDataCell colSpan={9} className="p-0 border-0">
+                {/* 8 columns for product details */}
+                <CTableDataCell colSpan={8} className="p-0 border-0">
                     <CCollapse visible={detailsVisible}>
                         <div className="p-3" style={{ backgroundColor: '#f8f9fa' }}>
                             <h6 className="mb-2" style={{ ...subTextStyle, fontWeight: '600', color: '#2c3e50' }}>
@@ -190,6 +190,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                             <CTable hover responsive className="mb-0">
                                 <CTableHead>
                                     <CTableRow>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">ID</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">Product Image</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col">Product Name</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col">Brand</CTableHeaderCell>
@@ -201,6 +202,10 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                                 <CTableBody>
                                     {order.products.map(product => (
                                         <CTableRow key={product.product_id}>
+
+                                            <CTableDataCell className="text-center">
+                                                <span style={subTextStyle}>{product.product_id}</span>
+                                            </CTableDataCell>
                                             <CTableDataCell className="text-center">
                                                 <img
                                                     src={product.product_image?.[0]?.product_image || product.product_image || 'https://via.placeholder.com/100'}
@@ -564,9 +569,9 @@ const Orders = () => {
                                     <CTableHeaderCell style={subHeaderStyle}>
                                         Order ID
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={subHeaderStyle}>
+                                    {/* <CTableHeaderCell style={subHeaderStyle}>
                                         Buyer Name
-                                    </CTableHeaderCell>
+                                    </CTableHeaderCell> */}
                                     <CTableHeaderCell style={subHeaderStyle}>
                                         Contact
                                     </CTableHeaderCell>
@@ -599,9 +604,9 @@ const Orders = () => {
                                     ))
                                 ) : (
                                     <CTableRow>
-                                        {/* 9 columns */}
+                                        {/* 8 columns */}
                                         <CTableDataCell
-                                            colSpan="9"
+                                            colSpan="8"
                                             className="text-center py-4"
                                             style={subTextStyle}
                                         >
@@ -655,7 +660,7 @@ const Orders = () => {
                         <div>
                             <div className="mb-3">
                                 <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_number}</p>
-                                <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p>
+                                {/* <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p> */}
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
                             <hr />
