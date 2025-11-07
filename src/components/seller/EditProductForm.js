@@ -126,7 +126,8 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
         </CCol>
 
         <CCol md={6}>
-          <CFormLabel htmlFor="edit-brand">Brand</CFormLabel>
+          <CFormLabel htmlFor="edit-brand">Brand <span className="text-danger">*</span>
+          </CFormLabel>
           <CFormInput
             type="text"
             id="edit-brand"
@@ -140,7 +141,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
 
       <CRow className="mb-3">
         <CCol xs={12}>
-          <CFormLabel htmlFor="edit-description">Description</CFormLabel>
+          <CFormLabel htmlFor="edit-description">Description <span className="text-danger">*</span></CFormLabel>
           <CFormTextarea
             id="edit-description"
             name="description"
@@ -184,7 +185,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
         </CCol>
 
         <CCol md={4}>
-          <CFormLabel htmlFor="edit-stock_quantity">Stock Quantity</CFormLabel>
+          <CFormLabel htmlFor="edit-stock_quantity">Stock Quantity <span className="text-danger">*</span></CFormLabel>
           <CFormInput
             type="number"
             id="edit-stock_quantity"
@@ -196,7 +197,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
         </CCol>
       </CRow>
 
-      <CRow className="mb-3">
+      {/* <CRow className="mb-3">
         <CCol md={6}>
           <CFormLabel htmlFor="edit-slug">Slug</CFormLabel>
           <CFormInput
@@ -220,7 +221,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
             placeholder="SKU-123"
           />
         </CCol>
-      </CRow>
+      </CRow> */}
 
       <div className="d-flex gap-2 justify-content-end mt-4">
         <CButton color="secondary" onClick={onCancel} disabled={isSubmitting}>
