@@ -7,8 +7,10 @@ import {
     CButton,
     CCard,
     CCardBody,
+    CCardFooter,
     CCardHeader,
     CCol,
+    CForm,
     CFormInput,
     CRow,
     CTable,
@@ -29,6 +31,8 @@ import {
     CModalFooter,
     CFormLabel,
     CFormTextarea,
+    CPagination,
+    CPaginationItem
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -83,54 +87,59 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
     <CTableRow>
         <CTableDataCell>
             <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-                {order.orderId}
+                {order.order_number}
             </span>
         </CTableDataCell>
         <CTableDataCell>
             <div className="d-flex align-items-center">
                 <CAvatar size="sm" color="primary" textColor="white" className="me-2">
-                    {order.customerName[0].toUpperCase()}
+                    {order.buyer_first_name ? order.buyer_first_name[0].toUpperCase() : '?'}
                 </CAvatar>
                 <span style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' }}>
-                    {order.customerName}
+                    {order.buyer_first_name ? order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}` : `${order.buyer_first_name}` : 'Buyer'}
                 </span>
             </div>
         </CTableDataCell>
         <CTableDataCell>
             <div>
                 <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                    {order.email}
+                    {order.buyer_email}
                 </div>
                 <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                    {order.phone}
+                    {order.phone || ''}
                 </div>
             </div>
         </CTableDataCell>
         <CTableDataCell>
-            <div className="d-flex align-items-center">
-                <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
-                    {order.marketplace}
-                </span>
-            </div>
+            <img
+                src={order.product_image?.[0]?.product_image || order.product_image || 'https://via.placeholder.com/100'}
+                alt={order.product_name}
+                style={{
+                    width: '48px',
+                    height: '48px',
+                    objectFit: 'contain',
+                    borderRadius: '6px',
+                }}
+            />
         </CTableDataCell>
         <CTableDataCell>
             <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
-                {order.items}
+                {order.product_name} (Qty: {order.quantity})
             </span>
         </CTableDataCell>
         <CTableDataCell>
             <span style={{ fontSize: '14px', fontWeight: '600', color: '#2c3e50' }}>
-                Rs. {order.totalAmount.toLocaleString()}
+                Rs. {Number(order.total_price).toLocaleString()}
             </span>
         </CTableDataCell>
         <CTableDataCell>{getStatusBadge(order.status)}</CTableDataCell>
         <CTableDataCell>
             <CDropdown alignment="end">
-                <CDropdownToggle color="ghost" size="sm">
+                <CDropdownToggle color="ghost" size="sm" caret={false}>
                     <CIcon icon={cilOptions} />
                 </CDropdownToggle>
                 <CDropdownMenu>
-                    <CDropdownItem 
+                    <CDropdownItem
                         onClick={() => onUpdateStatus(order)}
                         style={{ fontSize: '13px', fontWeight: '400' }}
                     >
@@ -145,7 +154,7 @@ OrderRow.displayName = 'OrderRow'
 
 const Orders = () => {
     const [searchTerm, setSearchTerm] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [showStatusModal, setShowStatusModal] = useState(false)
@@ -156,111 +165,77 @@ const Orders = () => {
     })
 
     // Orders data from API
-    const [orders, setOrders] = useState([
-        {
-            id: '1024',
-            orderId: 'ORD-1024',
-            customerName: 'A',
-            email: 'a@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Shopee',
-            items: 3,
-            totalAmount: 2460,
-            status: ORDER_STATUS.DELIVERED,
-            tracking_number: 'TRK-123456789',
-            notes: 'Order delivered successfully',
-            orderDate: 'Oct 28, 2024',
-        },
-        {
-            id: '1025',
-            orderId: 'ORD-1025',
-            customerName: 'B',
-            email: 'b@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Tokopedia',
-            items: 2,
-            totalAmount: 3456,
-            status: ORDER_STATUS.CONFIRMED,
-            tracking_number: '',
-            notes: 'Order confirmed, preparing for shipment',
-            orderDate: 'Oct 29, 2024',
-        },
-        {
-            id: '1026',
-            orderId: 'ORD-1026',
-            customerName: 'C',
-            email: 'c@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Amazon',
-            items: 5,
-            totalAmount: 4567,
-            status: ORDER_STATUS.SHIPPED,
-            tracking_number: 'TRK-987654321',
-            notes: 'Order shipped via express delivery',
-            orderDate: 'Oct 30, 2024',
-        },
-        {
-            id: '1029',
-            orderId: 'ORD-1029',
-            customerName: 'D',
-            email: 'd@gmail.com',
-            phone: '9876543229',
-            marketplace: 'Tokopedia',
-            items: 2,
-            totalAmount: 1234,
-            status: ORDER_STATUS.PENDING,
-            tracking_number: '',
-            notes: '',
-            orderDate: 'Nov 1, 2024',
-        },
-    ])
+    const [orders, setOrders] = useState([])
+
+    // Pagination state
+    const [pagination, setPagination] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
 
     // Fetch orders from API on component mount
-    // useEffect(() => {
-    //     fetchOrders()
-    // }, [])
+    useEffect(() => {
+        fetchOrders(currentPage)
+    }, [currentPage]) //Re-fetch when currentPage changes
 
     // GET /seller/orders - Fetch all seller orders
-    // const fetchOrders = async () => {
-    //     try {
-    //         setLoading(true)
-    //         setError(null)
-    //         const response = await axios.get(
-    //             `${Config.apiUrl}/orders/seller/orders`,
-    //             Config.AxiosConfig
-    //         )
+    const fetchOrders = async (page = 1) => {
+        try {
+            setLoading(true)
+            setError(null)
+            const response = await axios.get(
+                `${Config.baseUrl}/orders/seller/orders?page=${page}`,
+                Config.AxiosConfig
+            )
 
-    //         if (response.data && response.data.success) {
-    //             const ordersData = response.data.data || response.data.orders || []
-    //             setOrders(ordersData)
-    //         } else {
-    //             setOrders([])
-    //             setError('Failed to fetch orders')
-    //         }
-    //     } catch (err) {
-    //         console.error('Error fetching orders:', err)
-    //         setError(err.response?.data?.message || err.message || 'Failed to load orders')
-    //         setOrders([])
-    //     } finally {
-    //         setLoading(false)
-    //     }
-    // }
+            if (response.data && response.data.success) {
+                const ordersData = response.data.data.orders || []
+                setOrders(ordersData)
+                setPagination(response.data.data.pagination || null) // Set pagination data from api response
+            } else {
+                setOrders([])
+                setPagination(null) // Reset pagination on error
+                setError('Failed to fetch orders')
+            }
+        } catch (err) {
+            console.error('Error fetching orders:', err)
+            setError(err.response?.data?.message || err.message || 'Failed to load orders')
+            setOrders([])
+            setPagination(null) // Reset pagination on error
+        } finally {
+            setLoading(false)
+        }
+    }
 
-    const stats = useMemo(() => ({
-        totalOrders: orders.length,
-        totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
-        pendingOrders: orders.filter(o => o.status === ORDER_STATUS.PENDING).length,
-        avgOrderValue: orders.length > 0
-            ? orders.reduce((sum, order) => sum + order.totalAmount, 0) / orders.length
-            : 0,
-    }), [orders])
+    const stats = useMemo(() => {
+        const validOrders = Array.isArray(orders) ? orders : [];
+
+        const totalOrderCount = pagination ? pagination.total_items : 0;
+
+        // Create a Set of unique order IDs to avoid double-counting
+        const uniqueOrderIds = new Set(validOrders.map(o => o.order_id));
+
+        // Calculate revenue from unique orders only
+        const uniqueOrders = Array.from(uniqueOrderIds).map(orderId => {
+            return validOrders.find(o => o.order_id === orderId);
+        });
+
+        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
+
+        return {
+            totalOrders: totalOrderCount, // Count unique orders
+            totalRevenue: totalRevenue,
+            pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
+            avgOrderValue: uniqueOrderIds.size > 0
+                ? totalRevenue / uniqueOrderIds.size
+                : 0,
+        }
+    }, [orders, pagination])
 
 
     // PUT /:id/status - Update order status
     const updateOrderStatus = async (orderId) => {
         try {
             const response = await axios.put(
-                `${Config.apiUrl}/orders/${orderId}/status`,
+                `${Config.baseUrl}/orders/${selectedOrder.order_id}/status`,
                 {
                     status: statusUpdate.status,
                     tracking_number: statusUpdate.tracking_number,
@@ -273,7 +248,7 @@ const Orders = () => {
                 // Update local state
                 setOrders(prevOrders =>
                     prevOrders.map(order =>
-                        order.id === orderId
+                        order.order_id === orderId
                             ? { ...order, ...statusUpdate }
                             : order
                     )
@@ -310,9 +285,9 @@ const Orders = () => {
     // Handle status update submission
     const handleStatusUpdateSubmit = useCallback(() => {
         if (!selectedOrder || !statusUpdate.status) return
-        
+
         // Call API to update order status
-        updateOrderStatus(selectedOrder.id)
+        updateOrderStatus(selectedOrder.order_id)
     }, [selectedOrder, statusUpdate])
 
     // Get status badge component - Memoized callback
@@ -337,16 +312,25 @@ const Orders = () => {
 
     // Filtered orders with search
     const filteredOrders = useMemo(() => {
-        if (!searchTerm.trim()) return orders
+        const validOrders = Array.isArray(orders) ? orders : [];
+        if (!searchTerm.trim()) return validOrders;
 
         const searchLower = searchTerm.toLowerCase()
-        return orders.filter((order) =>
-            (order.customerName || '').toLowerCase().includes(searchLower) ||
-            (order.orderId || '').toLowerCase().includes(searchLower) ||
-            (order.email || '').toLowerCase().includes(searchLower) ||
-            (order.marketplace || '').toLowerCase().includes(searchLower)
+        return validOrders.filter((order) =>
+            (order.buyer_first_name || '').toLowerCase().includes(searchLower) ||
+            (order.buyer_last_name || '').toLowerCase().includes(searchLower) ||
+            (order.order_number || '').toLowerCase().includes(searchLower) ||
+            (order.buyer_email || '').toLowerCase().includes(searchLower) ||
+            (order.product_name || '').toLowerCase().includes(searchLower)
         )
     }, [orders, searchTerm])
+
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber < 1 || pageNumber > pagination.total_pages || pageNumber === currentPage) {
+            return
+        }
+        setCurrentPage(pageNumber)
+    }
 
     if (loading) {
         return (
@@ -452,16 +436,16 @@ const Orders = () => {
                                         Order ID
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Customer Name
+                                        Buyer Name
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
                                         Contact
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Marketplace
+                                        Product Image
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Items
+                                        Product Name
                                     </CTableHeaderCell>
                                     <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
                                         Total Amount
@@ -476,7 +460,7 @@ const Orders = () => {
                                 {filteredOrders.length > 0 ? (
                                     filteredOrders.map((order) => (
                                         <OrderRow
-                                            key={order.id}
+                                            key={`${order.order_id}-${order.product_id}`}
                                             order={order}
                                             onUpdateStatus={handleUpdateStatus}
                                             getStatusBadge={getStatusBadge}
@@ -484,8 +468,8 @@ const Orders = () => {
                                     ))
                                 ) : (
                                     <CTableRow>
-                                        <CTableDataCell 
-                                            colSpan="8" 
+                                        <CTableDataCell
+                                            colSpan="8"
                                             className="text-center py-4"
                                             style={{ fontSize: '14px', fontWeight: '400' }}
                                         >
@@ -497,10 +481,40 @@ const Orders = () => {
                         </CTable>
                     </div>
                 </CCardBody>
+                {/* Pagination Footer */}
+                {pagination && pagination.total_pages > 1 && (
+                    <CCardFooter>
+                        <CPagination align="end" aria-label="Page navigation">
+                            <CPaginationItem
+                                disabled={currentPage === 1}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                aria-label="Previous"
+                            >
+                                <span aria-hidden="true">&laquo;</span>
+                            </CPaginationItem>
+                            {[...Array(pagination.total_pages).keys()].map((page) => (
+                                <CPaginationItem
+                                    key={page + 1}
+                                    active={page + 1 === currentPage}
+                                    onClick={() => handlePageChange(page + 1)}
+                                >
+                                    {page + 1}
+                                </CPaginationItem>
+                            ))}
+                            <CPaginationItem
+                                disabled={currentPage === pagination.total_pages}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                aria-label="Next"
+                            >
+                                <span aria-hidden="true">&raquo;</span>
+                            </CPaginationItem>
+                        </CPagination>
+                    </CCardFooter>
+                )}
             </CCard>
 
             {/* Update Status Modal */}
-            <CModal visible={showStatusModal} onClose={handleCloseModal} size="lg">
+            <CModal visible={showStatusModal} onClose={handleCloseModal}>
                 <CModalHeader>
                     <CModalTitle>Update Order Status</CModalTitle>
                 </CModalHeader>
@@ -508,47 +522,53 @@ const Orders = () => {
                     {selectedOrder && (
                         <div>
                             <div className="mb-3">
-                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.orderId}</p>
-                                <p className="mb-1"><strong>Customer:</strong> {selectedOrder.customerName}</p>
+                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_id}</p>
+                                <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p>
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
                             <hr />
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="statusSelect">New Status *</CFormLabel>
-                                <select
-                                    id="statusSelect"
-                                    className="form-select"
-                                    value={statusUpdate.status}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
-                                >
-                                    <option value="">Select Status</option>
-                                    <option value={ORDER_STATUS.PENDING}>Pending</option>
-                                    <option value={ORDER_STATUS.CONFIRMED}>Confirmed</option>
-                                    <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
-                                    <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
-                                    <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
-                                </select>
-                            </div>
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="trackingNumber">Tracking Number</CFormLabel>
-                                <CFormInput
-                                    type="text"
-                                    id="trackingNumber"
-                                    placeholder="Enter tracking number"
-                                    value={statusUpdate.tracking_number}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, tracking_number: e.target.value })}
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <CFormLabel htmlFor="notes">Notes</CFormLabel>
-                                <CFormTextarea
-                                    id="notes"
-                                    rows="3"
-                                    placeholder="Add any notes or comments"
-                                    value={statusUpdate.notes}
-                                    onChange={(e) => setStatusUpdate({ ...statusUpdate, notes: e.target.value })}
-                                />
-                            </div>
+                            <CForm>
+                                <CRow className="g-3">
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="statusSelect">
+                                            New Status <span className="text-danger">*</span>
+                                        </CFormLabel>
+                                        <select
+                                            id="statusSelect"
+                                            className="form-select"
+                                            value={statusUpdate.status}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
+                                        >
+                                            <option value="">Select Status</option>
+                                            <option value={ORDER_STATUS.PENDING}>Pending</option>
+                                            <option value={ORDER_STATUS.CONFIRMED}>Confirmed</option>
+                                            <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
+                                            <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
+                                            <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
+                                        </select>
+                                    </CCol>
+                                    <CCol md={6}>
+                                        <CFormLabel htmlFor="trackingNumber">Tracking Number <span className="text-danger">*</span></CFormLabel>
+                                        <CFormInput
+                                            type="text"
+                                            id="trackingNumber"
+                                            placeholder="Enter tracking number"
+                                            value={statusUpdate.tracking_number}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, tracking_number: e.target.value })}
+                                        />
+                                    </CCol>
+                                    <CCol xs={12}>
+                                        <CFormLabel htmlFor="notes">Notes</CFormLabel>
+                                        <CFormTextarea
+                                            id="notes"
+                                            rows="3"
+                                            placeholder="Add any notes or comments"
+                                            value={statusUpdate.notes}
+                                            onChange={(e) => setStatusUpdate({ ...statusUpdate, notes: e.target.value })}
+                                        />
+                                    </CCol>
+                                </CRow>
+                            </CForm>
                         </div>
                     )}
                 </CModalBody>
