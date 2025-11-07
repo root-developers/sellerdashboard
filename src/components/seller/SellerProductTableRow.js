@@ -25,7 +25,7 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
     if (!window.confirm(`Are you sure you want to delete "${product.name}"?`)) return
     setIsDeleting(true)
     try {
-      const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
+      const response = await fetch(`${Config.baseUrl}/products/${product.id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -46,7 +46,7 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
     if (!window.confirm(`Are you sure you want to edit "${product.name}"?`)) return
     setIsEditing(true)
     try {
-      const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
+      const response = await fetch(`${Config.baseUrl}/products/${product.id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${user.token}`,

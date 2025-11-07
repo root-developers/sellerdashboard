@@ -70,7 +70,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
         submitData.append('images', imageFile)
       }
 
-      const response = await fetch(`${Config.apiUrl}/products`, {
+      const response = await fetch(`${Config.baseUrl}/products`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${user.token}`,
