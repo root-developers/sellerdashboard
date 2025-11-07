@@ -63,10 +63,10 @@ const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
   //   }
   // }
 
-const handleEdit = () => {
-  // use the onEdit prop 
-  onEdit(product)
-}
+  const handleEdit = () => {
+    // use the onEdit prop 
+    onEdit(product)
+  }
 
   const imageUrl =
     product.images?.[0]?.image_url || product.image || 'https://via.placeholder.com/100'
@@ -88,6 +88,11 @@ const handleEdit = () => {
         </div>
       </CTableDataCell>
       <CTableDataCell>
+        <span style={{ fontSize: '12px', color: '#6c757d', fontWeight: '400' }}>
+          {product.category_id}-{product.slug || '-'}
+        </span>
+      </CTableDataCell>
+      <CTableDataCell>
         <div style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' }}>
           {product.name}
         </div>
@@ -104,42 +109,37 @@ const handleEdit = () => {
         </span>
       </CTableDataCell>
       <CTableDataCell>
+        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
+          {product.category.name || '-'}
+        </span>
+      </CTableDataCell>
+      <CTableDataCell>
         <span style={{ fontSize: '14px', fontWeight: '600', color: '#28a745' }}>
           ₹{product.price}
         </span>
       </CTableDataCell>
       <CTableDataCell className="text-center">
         {product.stock_quantity > 0 ? (
-          <CBadge 
-            color="success" 
+          <CBadge
+            color="success"
             style={{ fontSize: '11px', fontWeight: '500', padding: '4px 8px' }}
           >
             In Stock ({product.stock_quantity})
           </CBadge>
         ) : (
-          <CBadge 
-            color="danger" 
+          <CBadge
+            color="danger"
             style={{ fontSize: '11px', fontWeight: '500', padding: '4px 8px' }}
           >
             Out of Stock
           </CBadge>
         )}
       </CTableDataCell>
-      <CTableDataCell>
-        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-          {product.category.name || '-'}
-        </span>
-      </CTableDataCell>
-      <CTableDataCell>
+      {/* <CTableDataCell>
         <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
           {product.sku || '-'}
         </span>
-      </CTableDataCell>
-      <CTableDataCell>
-        <span style={{ fontSize: '12px', color: '#6c757d', fontWeight: '400' }}>
-         {product.category_id}-{product.slug || '-'}
-        </span>
-      </CTableDataCell>
+      </CTableDataCell> */}
       <CTableDataCell className="text-center">
         <CDropdown alignment="end">
           <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting}>
@@ -150,17 +150,17 @@ const handleEdit = () => {
             )}
           </CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem 
-              onClick={handleEdit} 
+            <CDropdownItem
+              onClick={handleEdit}
               // disabled={isEditing}
               style={{ fontSize: '13px', fontWeight: '400' }}
             >
               <CIcon icon={cilPencil} className="me-2" />
               Edit
             </CDropdownItem>
-            <CDropdownItem 
-              onClick={handleDelete} 
-              disabled={isDeleting} 
+            <CDropdownItem
+              onClick={handleDelete}
+              disabled={isDeleting}
               className="text-danger"
               style={{ fontSize: '13px', fontWeight: '400' }}
             >

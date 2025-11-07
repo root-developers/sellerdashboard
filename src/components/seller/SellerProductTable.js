@@ -16,37 +16,37 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
       <CTable align="middle" className="mb-0 border" hover responsive>
         <CTableHead color="light">
           <CTableRow style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-            <CTableHeaderCell 
-              className="text-center" 
+            <CTableHeaderCell
+              className="text-center"
             >
               Image
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell>
+              {/* Slug */}
+              Product No.
+            </CTableHeaderCell>
+            <CTableHeaderCell>
               Product Name
             </CTableHeaderCell>
             <CTableHeaderCell >
               Brand
             </CTableHeaderCell>
             <CTableHeaderCell >
+              Category Name
+            </CTableHeaderCell>
+            <CTableHeaderCell >
               Price
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               className="text-center"
             >
               Stock Status
             </CTableHeaderCell>
-            <CTableHeaderCell >
-              Category Name
-            </CTableHeaderCell>
-            <CTableHeaderCell >
+            {/* <CTableHeaderCell >
               SKU
-            </CTableHeaderCell>
-            <CTableHeaderCell >
-              {/* Slug */}
-              Product No.
-            </CTableHeaderCell>
-            <CTableHeaderCell 
-              className="text-center"  
+            </CTableHeaderCell> */}
+            <CTableHeaderCell
+              className="text-center"
             >
               Actions
             </CTableHeaderCell>
@@ -64,8 +64,8 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
             ))
           ) : (
             <CTableRow>
-              <CTableHeaderCell 
-                colSpan="9" 
+              <CTableHeaderCell
+                colSpan="9"
                 className="text-center text-medium-emphasis py-4"
                 style={{ fontSize: '14px', fontWeight: '400' }}
               >
