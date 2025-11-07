@@ -16,9 +16,9 @@ import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPencil, cilTrash } from '@coreui/icons'
 import Config from '../../config/Config'
 
-const SellerProductTableRow = ({ product, onRefresh }) => {
+const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  // const [isEditing, setIsEditing] = useState(false)
   const user = useSelector((state) => state.UserReducer.user)
 
   const handleDelete = async () => {
@@ -42,26 +42,31 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
     }
   }
 
-  const handleEdit = async () => {
-    if (!window.confirm(`Are you sure you want to edit "${product.name}"?`)) return
-    setIsEditing(true)
-    try {
-      const response = await fetch(`${Config.baseUrl}/products/${product.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      if (!response.ok) throw new Error('Failed to edit product')
-      toast.success('Product edited successfully')
-      onRefresh()
-    } catch (error) {
-      toast.error('Failed to edit product')
-    } finally {
-      setIsEditing(false)
-    }
-  }
+  // const handleEdit = async () => {
+  //   if (!window.confirm(`Are you sure you want to edit "${product.name}"?`)) return
+  //   setIsEditing(true)
+  //   try {
+  //     const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         Authorization: `Bearer ${user.token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //     })
+  //     if (!response.ok) throw new Error('Failed to edit product')
+  //     toast.success('Product edited successfully')
+  //     onRefresh()
+  //   } catch (error) {
+  //     toast.error('Failed to edit product')
+  //   } finally {
+  //     setIsEditing(false)
+  //   }
+  // }
+
+const handleEdit = () => {
+  // use the onEdit prop 
+  onEdit(product)
+}
 
   const imageUrl =
     product.images?.[0]?.image_url || product.image || 'https://via.placeholder.com/100'
@@ -137,8 +142,8 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
       </CTableDataCell>
       <CTableDataCell className="text-center">
         <CDropdown alignment="end">
-          <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting || isEditing}>
-            {isDeleting || isEditing ? (
+          <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting}>
+            {isDeleting ? (
               <CSpinner size="sm" />
             ) : (
               <CIcon icon={cilOptions} />
@@ -147,11 +152,11 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
           <CDropdownMenu>
             <CDropdownItem 
               onClick={handleEdit} 
-              disabled={isEditing}
+              // disabled={isEditing}
               style={{ fontSize: '13px', fontWeight: '400' }}
             >
               <CIcon icon={cilPencil} className="me-2" />
-              {isEditing ? 'Editing...' : 'Edit'}
+              Edit
             </CDropdownItem>
             <CDropdownItem 
               onClick={handleDelete} 

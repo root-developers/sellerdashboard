@@ -8,7 +8,7 @@ import {
 } from '@coreui/react'
 import SellerProductTableRow from './SellerProductTableRow'
 
-const SellerProductTable = ({ products, onRefresh }) => {
+const SellerProductTable = ({ products, onRefresh, onEdit }) => {
   const finalProducts = products.data?.products || products || []
 
   return (
@@ -58,6 +58,7 @@ const SellerProductTable = ({ products, onRefresh }) => {
                 key={product.id}
                 product={product}
                 onRefresh={onRefresh}
+                onEdit={onEdit}
               />
             ))
           ) : (
