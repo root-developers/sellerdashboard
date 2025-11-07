@@ -32,24 +32,25 @@ import {
     CFormLabel,
     CFormTextarea,
     CPagination,
-    CPaginationItem
+    CPaginationItem,
+    CCollapse,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
     cilSearch,
     cilFilter,
     cilOptions,
-    cilPlus,
     cilArrowTop,
     cilArrowBottom,
     cilFullscreen,
-    cilSortAlphaUp,
     cilSwapVertical,
+    cilChevronBottom,
+    cilChevronTop,
 } from '@coreui/icons'
 import Config from '../../../config/Config'
 
 
-// Order Status Constants
+// Order Status
 const ORDER_STATUS = {
     PENDING: 'pending',
     CONFIRMED: 'confirmed',
@@ -58,7 +59,23 @@ const ORDER_STATUS = {
     CANCELLED: 'cancelled',
 }
 
-// Memoized StatCard Component
+// Style Constants for Consistency
+const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
+const subTextStyle = { fontSize: '13px', color: '#6c757d', fontWeight: '400' };
+const subHeaderStyle = { fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6c757d', letterSpacing: '0.5px' };
+
+// function to format date
+const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    } catch (e) {
+        return dateString; // Fallback
+    }
+};
+
+// Memoized StatCard Component 
 const StatCard = React.memo(({ value, percentage, isPositive, description, isCurrency }) => (
     <CCol sm={6} lg={3}>
         <CCard className="mb-4">
@@ -82,76 +99,145 @@ const StatCard = React.memo(({ value, percentage, isPositive, description, isCur
 ))
 StatCard.displayName = 'StatCard'
 
-// Memoized OrderRow Component
-const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => (
-    <CTableRow>
-        <CTableDataCell>
-            <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-                {order.order_number}
-            </span>
-        </CTableDataCell>
-        <CTableDataCell>
-            <div className="d-flex align-items-center">
-                <CAvatar size="sm" color="primary" textColor="white" className="me-2">
-                    {order.buyer_first_name ? order.buyer_first_name[0].toUpperCase() : '?'}
-                </CAvatar>
-                <span style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' }}>
-                    {order.buyer_first_name ? order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}` : `${order.buyer_first_name}` : 'Buyer'}
-                </span>
-            </div>
-        </CTableDataCell>
-        <CTableDataCell>
-            <div>
-                <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
-                    {order.buyer_email}
-                </div>
-                <div style={{ fontSize: '12px', color: '#6c757d' }}>
-                    {order.phone || ''}
-                </div>
-            </div>
-        </CTableDataCell>
-        <CTableDataCell>
-            <img
-                src={order.product_image?.[0]?.product_image || order.product_image || 'https://via.placeholder.com/100'}
-                alt={order.product_name}
-                style={{
-                    width: '48px',
-                    height: '48px',
-                    objectFit: 'contain',
-                    borderRadius: '6px',
-                }}
-            />
-        </CTableDataCell>
-        <CTableDataCell>
-            <span style={{ fontSize: '13px', color: '#2c3e50', fontWeight: '400' }}>
-                {order.product_name} (Qty: {order.quantity})
-            </span>
-        </CTableDataCell>
-        <CTableDataCell>
-            <span style={{ fontSize: '14px', fontWeight: '600', color: '#2c3e50' }}>
-                Rs. {Number(order.total_price).toLocaleString()}
-            </span>
-        </CTableDataCell>
-        <CTableDataCell>{getStatusBadge(order.status)}</CTableDataCell>
-        <CTableDataCell>
-            <CDropdown alignment="end">
-                <CDropdownToggle color="ghost" size="sm" caret={false}>
-                    <CIcon icon={cilOptions} />
-                </CDropdownToggle>
-                <CDropdownMenu>
-                    <CDropdownItem
-                        onClick={() => onUpdateStatus(order)}
-                        style={{ fontSize: '13px', fontWeight: '400' }}
+// Collapsible OrderRow Component
+const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
+    const [detailsVisible, setDetailsVisible] = useState(false)
+
+    const fullAddress = [
+        order.address_line_1,
+        order.city,
+        order.state,
+        order.postal_code,
+        order.country
+    ].filter(Boolean).join(', '); // join address parts if they exist
+
+    return (
+        <>
+            {/* Main Order Row */}
+            <CTableRow>
+                <CTableDataCell className="text-center" style={{ width: '40px' }}>
+                    <CButton
+                        color="secondary"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDetailsVisible(!detailsVisible)}
+                        aria-label={detailsVisible ? 'Hide products' : 'Show products'}
                     >
-                        Update Status
-                    </CDropdownItem>
-                </CDropdownMenu>
-            </CDropdown>
-        </CTableDataCell>
-    </CTableRow>
-))
+                        <CIcon icon={detailsVisible ? cilChevronTop : cilChevronBottom} />
+                    </CButton>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <span style={subTextStyle}>{order.order_number}</span>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <div className="d-flex align-items-center">
+                        <CAvatar size="sm" color="primary" textColor="white" className="me-2">
+                            {order.buyer_first_name ? order.buyer_first_name[0].toUpperCase() : '?'}
+                        </CAvatar>
+                        <span style={textStyle}>
+                            {order.buyer_first_name ? order.buyer_last_name ? `${order.buyer_first_name} ${order.buyer_last_name}` : `${order.buyer_first_name}` : 'Buyer'}
+                        </span>
+                    </div>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <div style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4' }}>
+                        <div>{order.buyer_email}</div>
+                        <div>{order.phone || ''}</div>
+                    </div>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <span style={subTextStyle}>{formatDate(order.order_date)}</span>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <span style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4', maxWidth: '200px', display: 'block' }}>
+                        {fullAddress || 'No Address'}
+                    </span>
+                </CTableDataCell>
+                <CTableDataCell>
+                    <span style={{ ...textStyle, fontWeight: '600' }}>
+                        Rs. {Number(order.total_amount).toLocaleString()}
+                    </span>
+                </CTableDataCell>
+                <CTableDataCell>
+                    {getStatusBadge(order.status)}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    <CDropdown alignment="end">
+                        <CDropdownToggle color="ghost" size="sm" caret={false}>
+                            <CIcon icon={cilOptions} />
+                        </CDropdownToggle>
+                        <CDropdownMenu>
+                            <CDropdownItem
+                                onClick={() => onUpdateStatus(order)}
+                                style={subTextStyle}
+                            >
+                                Update Status
+                            </CDropdownItem>
+                        </CDropdownMenu>
+                    </CDropdown>
+                </CTableDataCell>
+            </CTableRow>
+
+            {/* Collapsible Product Details Row */}
+            <CTableRow className="p-0">
+                {/* 9 columns for product details */}
+                <CTableDataCell colSpan={9} className="p-0 border-0">
+                    <CCollapse visible={detailsVisible}>
+                        <div className="p-3" style={{ backgroundColor: '#f8f9fa' }}>
+                            <h6 className="mb-2" style={{ ...subTextStyle, fontWeight: '600', color: '#2c3e50' }}>
+                                Products
+                            </h6>
+                            <CTable hover responsive className="mb-0">
+                                <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">Product Image</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Product Name</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Brand</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Quantity</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Item Price</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Total Price</CTableHeaderCell>
+                                    </CTableRow>
+                                </CTableHead>
+                                <CTableBody>
+                                    {order.products.map(product => (
+                                        <CTableRow key={product.product_id}>
+                                            <CTableDataCell className="text-center">
+                                                <img
+                                                    src={product.product_image?.[0]?.product_image || product.product_image || 'https://via.placeholder.com/100'}
+                                                    alt={product.product_name}
+                                                    style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '4px' }}
+                                                />
+                                            </CTableDataCell>
+                                            <CTableDataCell>
+                                                <span style={subTextStyle}>{product.product_name}</span>
+                                            </CTableDataCell>
+                                            <CTableDataCell>
+                                                <span style={subTextStyle}>{product.product_brand || 'N/A'}</span>
+                                            </CTableDataCell>
+                                            <CTableDataCell>
+                                                <span style={subTextStyle}>{product.quantity}</span>
+                                            </CTableDataCell>
+                                            <CTableDataCell>
+                                                <span style={subTextStyle}>Rs. {Number(product.unit_price).toLocaleString()}</span>
+                                            </CTableDataCell>
+                                            <CTableDataCell>
+                                                <span style={subTextStyle}>Rs. {Number(product.total_price).toLocaleString()}</span>
+                                            </CTableDataCell>
+                                        </CTableRow>
+                                    ))}
+                                </CTableBody>
+                            </CTable>
+                        </div>
+                    </CCollapse>
+                </CTableDataCell>
+            </CTableRow>
+        </>
+    )
+})
 OrderRow.displayName = 'OrderRow'
 
+
+// Main Orders Component 
 const Orders = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [loading, setLoading] = useState(true)
@@ -205,6 +291,55 @@ const Orders = () => {
         }
     }
 
+    // Memoized hook to group order items by order_id
+    const groupedOrders = useMemo(() => {
+        const groups = new Map();
+        const validOrders = Array.isArray(orders) ? orders : [];
+
+        validOrders.forEach(item => {
+            const orderId = item.order_id;
+
+            // Extract product details
+            const product = {
+                product_id: item.product_id,
+                product_name: item.product_name,
+                quantity: item.quantity,
+                product_image: item.product_image,
+                unit_price: item.unit_price,
+                total_price: item.total_price,
+                product_brand: item.product_brand,
+            };
+
+            if (!groups.has(orderId)) {
+                // Create new order group
+                groups.set(orderId, {
+                    order_id: item.order_id,
+                    order_number: item.order_number,
+                    buyer_first_name: item.buyer_first_name,
+                    buyer_last_name: item.buyer_last_name,
+                    buyer_email: item.buyer_email,
+                    phone: item.phone,
+                    total_amount: Number(item.total_amount) || 0, // Use total_amount for the whole order
+                    status: item.status,
+                    notes: item.notes,
+                    tracking_number: item.tracking_number,
+                    products: [product],
+                    order_date: item.order_date,
+                    address_line_1: item.address_line_1,
+                    city: item.city,
+                    state: item.state,
+                    postal_code: item.postal_code,
+                    country: item.country,
+                });
+            } else {
+                // Order group already exists. Just add the product.
+                groups.get(orderId).products.push(product);
+            }
+        });
+
+        return Array.from(groups.values());
+    }, [orders]);
+
     const stats = useMemo(() => {
         const validOrders = Array.isArray(orders) ? orders : [];
 
@@ -221,7 +356,7 @@ const Orders = () => {
         const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
 
         return {
-            totalOrders: totalOrderCount, // Count unique orders
+            totalOrders: totalOrderCount, // pagination total_items
             totalRevenue: totalRevenue,
             pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
             avgOrderValue: uniqueOrderIds.size > 0
@@ -245,14 +380,8 @@ const Orders = () => {
             )
 
             if (response.data && response.data.success) {
-                // Update local state
-                setOrders(prevOrders =>
-                    prevOrders.map(order =>
-                        order.order_id === orderId
-                            ? { ...order, ...statusUpdate }
-                            : order
-                    )
-                )
+                // Refresh the list to show updated status
+                fetchOrders(currentPage);
                 handleCloseModal()
                 toast.success('Order status updated successfully!')
             } else {
@@ -298,9 +427,9 @@ const Orders = () => {
             case ORDER_STATUS.DELIVERED:
                 return <CBadge color="success" style={badgeStyle}>Delivered</CBadge>
             case ORDER_STATUS.SHIPPED:
-                return <CBadge color="info" style={badgeStyle}>Shipped</CBadge>
+                return <CBadge color="warning" style={badgeStyle}>Shipped</CBadge>
             case ORDER_STATUS.CONFIRMED:
-                return <CBadge color="warning" style={badgeStyle}>Confirmed</CBadge>
+                return <CBadge color="success" style={badgeStyle}>Confirmed</CBadge>
             case ORDER_STATUS.CANCELLED:
                 return <CBadge color="danger" style={badgeStyle}>Cancelled</CBadge>
             case ORDER_STATUS.PENDING:
@@ -312,21 +441,20 @@ const Orders = () => {
 
     // Filtered orders with search
     const filteredOrders = useMemo(() => {
-        const validOrders = Array.isArray(orders) ? orders : [];
-        if (!searchTerm.trim()) return validOrders;
+        if (!searchTerm.trim()) return groupedOrders;
 
         const searchLower = searchTerm.toLowerCase()
-        return validOrders.filter((order) =>
+        return groupedOrders.filter((order) =>
             (order.buyer_first_name || '').toLowerCase().includes(searchLower) ||
             (order.buyer_last_name || '').toLowerCase().includes(searchLower) ||
             (order.order_number || '').toLowerCase().includes(searchLower) ||
             (order.buyer_email || '').toLowerCase().includes(searchLower) ||
-            (order.product_name || '').toLowerCase().includes(searchLower)
+            order.products.some(p => (p.product_name || '').toLowerCase().includes(searchLower))
         )
-    }, [orders, searchTerm])
+    }, [groupedOrders, searchTerm])
 
     const handlePageChange = (pageNumber) => {
-        if (pageNumber < 1 || pageNumber > pagination.total_pages || pageNumber === currentPage) {
+        if (pageNumber < 1 || !pagination || pageNumber > pagination.total_pages || pageNumber === currentPage) {
             return
         }
         setCurrentPage(pageNumber)
@@ -347,7 +475,7 @@ const Orders = () => {
                 <CCardBody>
                     <div className="text-center text-danger py-4">
                         <p>{error}</p>
-                        <CButton color="primary" onClick={fetchOrders}>
+                        <CButton color="primary" onClick={() => fetchOrders(1)}>
                             Retry
                         </CButton>
                     </div>
@@ -398,8 +526,8 @@ const Orders = () => {
                             </h5>
                         </CCol>
                         <CCol xs={12} md={6} className="text-md-end mt-2 mt-md-0">
-                            <div className="d-flex gap-2 justify-content-md-end">
-                                <div className="position-relative" style={{ maxWidth: '250px' }}>
+                            <div className="d-flex gap-2 flex-column flex-md-row justify-content-md-end">
+                                <div className="position-relative">
                                     <CFormInput
                                         type="text"
                                         placeholder="Search..."
@@ -432,35 +560,38 @@ const Orders = () => {
                         <CTable align="middle" className="mb-0" hover>
                             <CTableHead color="light">
                                 <CTableRow>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                    <CTableHeaderCell style={{ ...subHeaderStyle, width: '40px' }} />
+                                    <CTableHeaderCell style={subHeaderStyle}>
                                         Order ID
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                    <CTableHeaderCell style={subHeaderStyle}>
                                         Buyer Name
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                    <CTableHeaderCell style={subHeaderStyle}>
                                         Contact
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Product Image
+                                    <CTableHeaderCell style={subHeaderStyle}>
+                                        Order Date
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-                                        Product Name
+                                    <CTableHeaderCell style={subHeaderStyle}>
+                                        Shipping Address
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                    <CTableHeaderCell style={subHeaderStyle}>
                                         Total Amount
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+                                    <CTableHeaderCell style={subHeaderStyle}>
                                         Status
                                     </CTableHeaderCell>
-                                    <CTableHeaderCell></CTableHeaderCell>
+                                    <CTableHeaderCell style={subHeaderStyle} className="text-center">
+                                        Actions
+                                    </CTableHeaderCell>
                                 </CTableRow>
                             </CTableHead>
                             <CTableBody>
                                 {filteredOrders.length > 0 ? (
                                     filteredOrders.map((order) => (
                                         <OrderRow
-                                            key={`${order.order_id}-${order.product_id}`}
+                                            key={order.order_id}
                                             order={order}
                                             onUpdateStatus={handleUpdateStatus}
                                             getStatusBadge={getStatusBadge}
@@ -468,10 +599,11 @@ const Orders = () => {
                                     ))
                                 ) : (
                                     <CTableRow>
+                                        {/* 9 columns */}
                                         <CTableDataCell
-                                            colSpan="8"
+                                            colSpan="9"
                                             className="text-center py-4"
-                                            style={{ fontSize: '14px', fontWeight: '400' }}
+                                            style={subTextStyle}
                                         >
                                             No orders found
                                         </CTableDataCell>
@@ -522,7 +654,7 @@ const Orders = () => {
                     {selectedOrder && (
                         <div>
                             <div className="mb-3">
-                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_id}</p>
+                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_number}</p>
                                 <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p>
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
