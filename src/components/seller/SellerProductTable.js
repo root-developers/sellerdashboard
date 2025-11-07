@@ -42,7 +42,8 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
               SKU
             </CTableHeaderCell>
             <CTableHeaderCell >
-              Slug
+              {/* Slug */}
+              Product No.
             </CTableHeaderCell>
             <CTableHeaderCell 
               className="text-center"  
