@@ -130,7 +130,8 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
           </CCol>
 
           <CCol md={6}>
-            <CFormLabel htmlFor="brand">Brand</CFormLabel>
+            <CFormLabel htmlFor="brand">Brand <span className="text-danger">*</span>
+            </CFormLabel>
             <CFormInput
               type="text"
               id="brand"
@@ -144,7 +145,8 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
 
         <CRow className="mb-3">
           <CCol xs={12}>
-            <CFormLabel htmlFor="description">Description</CFormLabel>
+            <CFormLabel htmlFor="description">Description <span className="text-danger">*</span>
+            </CFormLabel>
             <CFormTextarea
               id="description"
               name="description"
@@ -188,7 +190,9 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
           </CCol>
 
           <CCol md={4}>
-            <CFormLabel htmlFor="stock_quantity">Stock Quantity</CFormLabel>
+            <CFormLabel htmlFor="stock_quantity">Stock Quantity
+              <span className="text-danger">*</span>
+            </CFormLabel>
             <CFormInput
               type="number"
               id="stock_quantity"
@@ -200,7 +204,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
           </CCol>
         </CRow>
 
-        <CRow className="mb-3">
+        {/* <CRow className="mb-3">
           <CCol md={6}>
             <CFormLabel htmlFor="slug">Slug</CFormLabel>
             <CFormInput
@@ -224,7 +228,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               placeholder="SKU-123"
             />
           </CCol>
-        </CRow>
+        </CRow> */}
 
         <CRow className="mb-4">
           <CCol xs={12}>
