@@ -9,6 +9,7 @@ import {
   CRow,
   CCol,
   CSpinner,
+  CFormSelect,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
 import Config from '../../config/Config'
@@ -27,10 +28,10 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
     slug: '',
     sku: '',
   })
-  // Note: Image editing is not included in this form.
-  // A proper implementation would require handling image uploads, previews, and deletions.
+  const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categoriesError, setCategoriesError] = useState(null)
 
-  // When the productToEdit prop changes, update the form data
   useEffect(() => {
     if (productToEdit) {
       setFormData({
@@ -45,6 +46,44 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
       })
     }
   }, [productToEdit])
+
+  // useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true)
+        setCategoriesError(null)
+        const response = await fetch(`${Config.baseUrl}/categories`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+
+        const data = await response.json()
+
+        setCategories(data.data.categories || [])
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        setCategoriesError('Failed to load categories.')
+        toast.error('Failed to load categories')
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+
+    if (user?.token) {
+      fetchCategories()
+    } else {
+      setCategoriesLoading(false)
+      setCategoriesError('Not authenticated.')
+    }
+  }, [user?.token])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -169,7 +208,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
           />
         </CCol>
 
-        <CCol md={4}>
+        {/* <CCol md={4}>
           <CFormLabel htmlFor="edit-category_id">
             Category ID <span className="text-danger">*</span>
           </CFormLabel>
@@ -182,6 +221,34 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
             placeholder="1"
             required
           />
+        </CCol> */}
+
+        <CCol md={4}>
+          <CFormLabel htmlFor="edit-category_id">
+            Category <span className="text-danger">*</span>
+          </CFormLabel>
+          <CFormSelect
+            id="edit-category_id"
+            name="category_id"
+            value={formData.category_id}
+            onChange={handleInputChange}
+            required
+            disabled={categoriesLoading}
+          >
+            <option value="">
+              {categoriesLoading
+                ? 'Loading...'
+                : 'Select a category'}
+            </option>
+            {!categoriesLoading &&
+              !categoriesError &&
+              categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+          </CFormSelect>
+          {categoriesError && <div className="text-danger small mt-1">{categoriesError}</div>}
         </CCol>
 
         <CCol md={4}>

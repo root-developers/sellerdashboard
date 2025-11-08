@@ -245,10 +245,8 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
             >
               <option value="">
                 {categoriesLoading
-                  ? 'Loading categories...'
-                  : categoriesError
-                    ? 'Error loading categories'
-                    : 'Select a category'}
+                  ? 'Loading...'
+                  : 'Select a category'}
               </option>
               {!categoriesLoading &&
                 !categoriesError &&
