@@ -53,7 +53,7 @@ import Config from '../../../config/Config'
 
 // Order Status
 const ORDER_STATUS = {
-    // PENDING: 'pending',
+    PENDING: 'pending',
     CONFIRMED: 'confirmed',
     SHIPPED: 'shipped',
     DELIVERED: 'delivered',
@@ -63,7 +63,7 @@ const ORDER_STATUS = {
 // Style Constants for Consistency
 const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
 const subTextStyle = { fontSize: '13px', color: '#6c757d', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
-const subHeaderStyle = { fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6c757d', letterSpacing: '0.5px', maxWidth: '30px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' };
+const subHeaderStyle = { fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px', maxWidth: '30px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' };
 
 // function to format date
 const formatDate = (dateString) => {
@@ -76,19 +76,16 @@ const formatDate = (dateString) => {
     }
 };
 
-// Memoized StatCard Component 
-const StatCard = React.memo(({ value, percentage, isPositive, description, isCurrency }) => (
+// Memoized StatCard Component
+const StatCard = React.memo(({ value, description }) => (
     <CCol sm={6} lg={3}>
         <CCard className="mb-4">
             <CCardBody>
                 <div className="d-flex justify-content-between align-items-start">
                     <div>
-                        <h2 className="mb-0 fw-bold">
-                            {isCurrency && 'Rs. '}{typeof value === 'number' ? value.toLocaleString() : value}
+                        <h2 className="mb-0 fw-semibold">
+                            {description === "Total Revenue" || description === "Avg. Order Value" ? "Rs. " + (typeof value === 'number' ? value.toLocaleString() : value) : value}
                         </h2>
-                        <div className={`${isPositive ? 'text-success' : 'text-danger'} small`}>
-                            <CIcon icon={isPositive ? cilArrowTop : cilArrowBottom} size="sm" /> {isPositive ? '+' : ''}{percentage}%
-                        </div>
                         <p className="text-medium-emphasis small mb-0 mt-1">
                             {description}
                         </p>
@@ -171,6 +168,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                             <CDropdownItem
                                 onClick={() => onUpdateStatus(order)}
                                 style={subTextStyle}
+                                className='text-black'
                             >
                                 Update Status
                             </CDropdownItem>
@@ -500,29 +498,19 @@ const Orders = () => {
             <CRow className="mb-4">
                 <StatCard
                     value={stats.totalOrders}
-                    percentage={4.3}
-                    isPositive={true}
-                    description="Increased by +1,238 this week"
+                    description="Total Orders"
                 />
                 <StatCard
                     value={stats.pendingOrders}
-                    percentage={12.5}
-                    isPositive={true}
-                    description="Increased by +467 this week"
+                    description="Pending Orders"
                 />
                 <StatCard
                     value={stats.totalRevenue}
-                    percentage={0.3}
-                    isPositive={false}
-                    isCurrency={true}
-                    description="Decreased by -$2.2 this week"
+                    description="Total Revenue"
                 />
                 <StatCard
                     value={Math.round(stats.avgOrderValue)}
-                    percentage={2.3}
-                    isPositive={true}
-                    isCurrency={true}
-                    description="Increased by +2.3% this week"
+                    description="Avg. Order Value"
                 />
             </CRow>
 
@@ -572,7 +560,7 @@ const Orders = () => {
                                 <CTableRow>
                                     <CTableHeaderCell style={{ ...subHeaderStyle, width: '40px' }} />
                                     <CTableHeaderCell style={subHeaderStyle}>
-                                        Order Number
+                                        Order No.
                                     </CTableHeaderCell>
                                     {/* <CTableHeaderCell style={subHeaderStyle}>
                                         Buyer Name
@@ -664,7 +652,7 @@ const Orders = () => {
                     {selectedOrder && (
                         <div>
                             <div className="mb-3">
-                                <p className="mb-1"><strong>Order Number:</strong> {selectedOrder.order_number}</p>
+                                <p className="mb-1"><strong>Order No:</strong> {selectedOrder.order_number}</p>
                                 {/* <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p> */}
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
@@ -677,7 +665,7 @@ const Orders = () => {
                                         </CFormLabel>
                                         <select
                                             id="statusSelect"
-                                            className="form-select"
+                                            className="form-select text-black"
                                             value={statusUpdate.status}
                                             onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
                                         >
