@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
 import {
     CAvatar,
     CBadge,
@@ -52,7 +53,7 @@ import Config from '../../../config/Config'
 
 // Order Status
 const ORDER_STATUS = {
-    PENDING: 'pending',
+    // PENDING: 'pending',
     CONFIRMED: 'confirmed',
     SHIPPED: 'shipped',
     DELIVERED: 'delivered',
@@ -262,6 +263,10 @@ const Orders = () => {
     const [pagination, setPagination] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
 
+    // Get user from Redux store
+    const user = useSelector((state) => state.UserReducer.user)
+    const role = user?.role
+
     // Fetch orders from API on component mount
     useEffect(() => {
         fetchOrders(currentPage)
@@ -437,8 +442,8 @@ const Orders = () => {
                 return <CBadge color="success" style={badgeStyle}>Confirmed</CBadge>
             case ORDER_STATUS.CANCELLED:
                 return <CBadge color="danger" style={badgeStyle}>Cancelled</CBadge>
-            case ORDER_STATUS.PENDING:
-                return <CBadge color="secondary" style={badgeStyle}>Pending</CBadge>
+            // case ORDER_STATUS.PENDING:
+            //     return <CBadge color="secondary" style={badgeStyle}>Pending</CBadge>
             default:
                 return <CBadge color="secondary" style={badgeStyle}>{status}</CBadge>
         }
@@ -677,11 +682,24 @@ const Orders = () => {
                                             onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
                                         >
                                             <option value="">Select Status</option>
-                                            <option value={ORDER_STATUS.PENDING}>Pending</option>
+                                            {/* <option value={ORDER_STATUS.PENDING}>Pending</option> */}
                                             <option value={ORDER_STATUS.CONFIRMED}>Confirmed</option>
-                                            <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
-                                            <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
-                                            <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
+                                            <option value={ORDER_STATUS.SHIPPED}
+                                                disabled={role !== Config.userType.ADMIN}>
+                                                Shipped</option>
+                                            <option value={ORDER_STATUS.DELIVERED}
+                                                disabled={role !== Config.userType.ADMIN}>
+                                                Delivered</option>
+                                            <option value={ORDER_STATUS.CANCELLED}
+                                                disabled={role !== Config.userType.ADMIN}>
+                                                Cancelled</option>
+                                            {/* { role === Config.userType.ADMIN && (
+                                            <>
+                                                <option value={ORDER_STATUS.SHIPPED}>Shipped</option>
+                                                <option value={ORDER_STATUS.DELIVERED}>Delivered</option>
+                                                <option value={ORDER_STATUS.CANCELLED}>Cancelled</option>
+                                            </>
+                                        )} */}
                                         </select>
                                     </CCol>
                                     <CCol md={6}>
