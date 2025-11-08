@@ -16,6 +16,17 @@ import {
   cilClipboard,
   cilStorage,
   cilContact,
+  cilGroup,
+  cilGrid,
+  cilImage,
+  cilTag,
+  cilTags,
+  cilLayers,
+  cilMenu,
+  cilViewColumn,
+  cilFolderOpen,
+  cilApplications,
+  cilColorPalette,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -45,10 +56,16 @@ const _nav = [
         component: CNavItem,
         name: 'Orders',
         to: '/management/orders',
-        icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+        icon: <CIcon icon={cilLayers} customClassName="nav-icon" />,
         badge: {
           color: 'info',
         },
+      },
+      {
+        component: CNavItem,
+        name: 'All Sellers',
+        to: '/management/all-sellers',
+        icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
@@ -70,6 +87,42 @@ const _nav = [
       },
     ],
   },
+  {
+    component: CNavGroup,
+    name: 'UI Management',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Categories',
+        to: '/ui-management/categories',
+        icon: <CIcon icon={cilApplications} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Carousel',
+        to: '/ui-management/carousel',
+        icon: <CIcon icon={cilImage} customClassName="nav-icon" />, 
+      },
+      {
+        component: CNavItem,
+        name: 'Navbar Color',
+        to: '/ui-management/navbar-color',
+        icon: <CIcon icon={cilColorPalette} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Offer Banners',
+        to: '/ui-management/offer-banners',
+        icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Misc Banners',
+        to: '/ui-management/misc-banners',
+        icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
+      },
+    ],
+  }
   // {
   //   component: CNavTitle,
   //   name: 'Theme',
