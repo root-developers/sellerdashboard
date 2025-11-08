@@ -62,8 +62,8 @@ const ORDER_STATUS = {
 
 // Style Constants for Consistency
 const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
-const subTextStyle = { fontSize: '13px', color: '#6c757d', fontWeight: '400' };
-const subHeaderStyle = { fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6c757d', letterSpacing: '0.5px' };
+const subTextStyle = { fontSize: '13px', color: '#6c757d', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const subHeaderStyle = { fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', color: '#6c757d', letterSpacing: '0.5px', maxWidth: '30px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' };
 
 // function to format date
 const formatDate = (dateString) => {
@@ -140,17 +140,17 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                         </span>
                     </div>
                 </CTableDataCell> */}
-                <CTableDataCell>
+                {/* <CTableDataCell>
                     <div style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4' }}>
                         <div>{order.buyer_email}</div>
                         <div>{order.phone || ''}</div>
                     </div>
-                </CTableDataCell>
+                </CTableDataCell> */}
                 <CTableDataCell>
                     <span style={subTextStyle}>{formatDate(order.order_date)}</span>
                 </CTableDataCell>
                 <CTableDataCell>
-                    <span style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4', maxWidth: '200px', display: 'block' }}>
+                    <span style={{ ...subTextStyle, fontSize: '12px', lineHeight: '1.4', maxWidth: '150px', display: 'block' }}>
                         {fullAddress || 'No Address'}
                     </span>
                 </CTableDataCell>
@@ -192,8 +192,8 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                                 <CTableHead>
                                     <CTableRow>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">ID</CTableHeaderCell>
-                                        <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">Product Image</CTableHeaderCell>
-                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Product Name</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col" className="text-center">Image</CTableHeaderCell>
+                                        <CTableHeaderCell style={subHeaderStyle} scope="col">Name</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col">Brand</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col">Quantity</CTableHeaderCell>
                                         <CTableHeaderCell style={subHeaderStyle} scope="col">Item Price</CTableHeaderCell>
@@ -572,14 +572,14 @@ const Orders = () => {
                                 <CTableRow>
                                     <CTableHeaderCell style={{ ...subHeaderStyle, width: '40px' }} />
                                     <CTableHeaderCell style={subHeaderStyle}>
-                                        Order ID
+                                        Order Number
                                     </CTableHeaderCell>
                                     {/* <CTableHeaderCell style={subHeaderStyle}>
                                         Buyer Name
                                     </CTableHeaderCell> */}
-                                    <CTableHeaderCell style={subHeaderStyle}>
+                                    {/* <CTableHeaderCell style={subHeaderStyle}>
                                         Contact
-                                    </CTableHeaderCell>
+                                    </CTableHeaderCell> */}
                                     <CTableHeaderCell style={subHeaderStyle}>
                                         Order Date
                                     </CTableHeaderCell>
@@ -664,7 +664,7 @@ const Orders = () => {
                     {selectedOrder && (
                         <div>
                             <div className="mb-3">
-                                <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.order_number}</p>
+                                <p className="mb-1"><strong>Order Number:</strong> {selectedOrder.order_number}</p>
                                 {/* <p className="mb-1"><strong>Buyer:</strong> {selectedOrder.buyer_first_name ? selectedOrder.buyer_last_name ? `${selectedOrder.buyer_first_name} ${selectedOrder.buyer_last_name}` : `${selectedOrder.buyer_first_name}` : 'Buyer'}</p> */}
                                 <p className="mb-1"><strong>Current Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                             </div>
