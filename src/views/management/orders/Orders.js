@@ -279,7 +279,7 @@ const Orders = () => {
             setError(null)
             const response = await axios.get(
                 `${Config.baseUrl}/orders/seller/orders?page=${page}`,
-                Config.AxiosConfig
+                Config.AxiosConfig()
             )
 
             if (response.data && response.data.success) {
@@ -386,7 +386,7 @@ const Orders = () => {
                     tracking_number: statusUpdate.tracking_number,
                     notes: statusUpdate.notes,
                 },
-                Config.AxiosConfig
+                Config.AxiosConfig()
             )
 
             if (response.data && response.data.success) {

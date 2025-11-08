@@ -21,12 +21,12 @@ const GetUserId = () => {
 };
 
 const Config = {
-  AxiosConfig: {
+ AxiosConfig: () => ({
     headers: {
       authorization: `${GetAccessToken()}`,
       id: GetUserId(),
     },
-  },
+  }),
 
   userType: {
     ADMIN: 'admin',
