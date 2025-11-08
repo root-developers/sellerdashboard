@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import {
   CForm,
@@ -9,6 +9,7 @@ import {
   CRow,
   CCol,
   CSpinner,
+  CFormSelect,
 } from '@coreui/react'
 import { useSelector } from 'react-redux'
 import Config from '../../config/Config'
@@ -28,6 +29,47 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
     sku: '',
   })
   const [imageFile, setImageFile] = useState(null)
+  const [categories, setCategories] = useState([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categoriesError, setCategoriesError] = useState(null)
+
+  // useEffect to fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setCategoriesLoading(true)
+        setCategoriesError(null)
+        const response = await fetch(`${Config.baseUrl}/categories`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+
+        const data = await response.json()
+
+        setCategories(data.data.categories || [])
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+        setCategoriesError('Failed to load categories.')
+        toast.error('Failed to load categories')
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+
+    if (user?.token) {
+      fetchCategories()
+    } else {
+      setCategoriesLoading(false)
+      setCategoriesError('Not authenticated.')
+    }
+  }, [user?.token])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -174,7 +216,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
             />
           </CCol>
 
-          <CCol md={4}>
+          {/* <CCol md={4}>
             <CFormLabel htmlFor="category_id">
               Category ID <span className="text-danger">*</span>
             </CFormLabel>
@@ -187,7 +229,38 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               placeholder="1"
               required
             />
+          </CCol> */}
+
+          <CCol md={4}>
+            <CFormLabel htmlFor="category_id">
+              Category <span className="text-danger">*</span>
+            </CFormLabel>
+            <CFormSelect
+              id="category_id"
+              name="category_id"
+              value={formData.category_id}
+              onChange={handleInputChange}
+              required
+              disabled={categoriesLoading}
+            >
+              <option value="">
+                {categoriesLoading
+                  ? 'Loading categories...'
+                  : categoriesError
+                    ? 'Error loading categories'
+                    : 'Select a category'}
+              </option>
+              {!categoriesLoading &&
+                !categoriesError &&
+                categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+            </CFormSelect>
+            {categoriesError && <div className="text-danger small mt-1">{categoriesError}</div>}
           </CCol>
+
 
           <CCol md={4}>
             <CFormLabel htmlFor="stock_quantity">Stock Quantity
