@@ -41,7 +41,7 @@ const textStyle = {
 }
 const subTextStyle = {
   fontSize: '13px',
-  color: '#6c757d',
+  color: 'black',
   fontWeight: '400',
   maxWidth: '200px',
   display: 'block',
