@@ -8,6 +8,18 @@ import {
 } from '@coreui/react'
 import SellerProductTableRow from './SellerProductTableRow'
 
+const headerStyle = {
+  fontSize: '14px',
+  fontWeight: '600',
+  textTransform: 'uppercase',
+  color: 'black',
+  letterSpacing: '0.5px',
+  // maxWidth: '30px',
+  textOverflow: 'ellipsis',
+  // whiteSpace: 'nowrap',
+  overflow: 'hidden',
+}
+
 const SellerProductTable = ({ products, onRefresh, onEdit }) => {
   const finalProducts = products.data?.products || products || []
 
@@ -15,30 +27,32 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
     <div className="table-responsive">
       <CTable align="middle" className="mb-0 border" hover responsive>
         <CTableHead color="light">
-          <CTableRow style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
+          <CTableRow>
             <CTableHeaderCell
               className="text-center"
+              style={headerStyle}
             >
               Image
             </CTableHeaderCell>
-            <CTableHeaderCell>
+            <CTableHeaderCell style={headerStyle}>
               {/* Slug */}
               Product No.
             </CTableHeaderCell>
-            <CTableHeaderCell>
+            <CTableHeaderCell style={headerStyle}>
               Product Name
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
               Brand
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
               Category Name
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
               Price
             </CTableHeaderCell>
             <CTableHeaderCell
               className="text-center"
+              style={headerStyle}
             >
               Stock Status
             </CTableHeaderCell>
@@ -47,6 +61,7 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
             </CTableHeaderCell> */}
             <CTableHeaderCell
               className="text-center"
+              style={headerStyle}
             >
               Actions
             </CTableHeaderCell>
