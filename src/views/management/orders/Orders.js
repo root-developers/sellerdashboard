@@ -62,7 +62,7 @@ const ORDER_STATUS = {
 
 // Style Constants for Consistency
 const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
-const subTextStyle = { fontSize: '13px', color: '#6c757d', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const subTextStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 const subHeaderStyle = { fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px', maxWidth: '30px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' };
 
 // function to format date
@@ -152,8 +152,8 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                     </span>
                 </CTableDataCell>
                 <CTableDataCell>
-                    <span style={{ ...textStyle, fontWeight: '600' }}>
-                        Rs. {Number(order.total_amount).toLocaleString()}
+                    <span style={subTextStyle}>
+                        Rs. {parseFloat(order.total_amount).toLocaleString()}
                     </span>
                 </CTableDataCell>
                 <CTableDataCell>
@@ -161,7 +161,8 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                 </CTableDataCell>
                 <CTableDataCell className="text-center">
                     <CDropdown alignment="end">
-                        <CDropdownToggle color="ghost" size="sm" caret={false}>
+                        <CDropdownToggle color="ghost" size="sm" caret={false}
+                        style={subTextStyle}>
                             <CIcon icon={cilOptions} />
                         </CDropdownToggle>
                         <CDropdownMenu>
@@ -222,10 +223,10 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                                                 <span style={subTextStyle}>{product.quantity}</span>
                                             </CTableDataCell>
                                             <CTableDataCell>
-                                                <span style={subTextStyle}>Rs. {Number(product.unit_price).toLocaleString()}</span>
+                                                <span style={subTextStyle}>Rs. {parseFloat(product.unit_price).toLocaleString()}</span>
                                             </CTableDataCell>
                                             <CTableDataCell>
-                                                <span style={subTextStyle}>Rs. {Number(product.total_price).toLocaleString()}</span>
+                                                <span style={subTextStyle}>Rs. {parseFloat(product.total_price).toLocaleString()}</span>
                                             </CTableDataCell>
                                         </CTableRow>
                                     ))}
@@ -327,7 +328,7 @@ const Orders = () => {
                     buyer_last_name: item.buyer_last_name,
                     buyer_email: item.buyer_email,
                     phone: item.phone,
-                    total_amount: Number(item.total_amount) || 0, // Use total_amount for the whole order
+                    total_amount: parseFloat(item.total_amount) || 0, // Use total_amount for the whole order
                     status: item.status,
                     notes: item.notes,
                     tracking_number: item.tracking_number,
@@ -361,7 +362,7 @@ const Orders = () => {
             return validOrders.find(o => o.order_id === orderId);
         });
 
-        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0);
+        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (parseFloat(order.total_amount) || 0), 0);
 
         return {
             totalOrders: totalOrderCount, // pagination total_items
