@@ -63,7 +63,11 @@ const ORDER_STATUS = {
 // Style Constants for Consistency
 const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
 const subTextStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
-const subHeaderStyle = { fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px', maxWidth: '30px', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' };
+const subHeaderStyle = { fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px', 
+    // maxWidth: '30px',
+    textOverflow: 'ellipsis',
+    // whiteSpace: 'nowrap',
+    overflow: 'hidden' };
 
 // function to format date
 const formatDate = (dateString) => {
