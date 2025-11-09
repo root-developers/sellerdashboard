@@ -11,7 +11,7 @@ import SellerProductTableRow from './SellerProductTableRow'
 const headerStyle = {
   fontSize: '14px',
   fontWeight: '600',
-  textTransform: 'uppercase',
+  // textTransform: 'uppercase',
   color: 'black',
   letterSpacing: '0.5px',
   // maxWidth: '30px',
@@ -36,7 +36,7 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
             </CTableHeaderCell>
             <CTableHeaderCell style={headerStyle}>
               {/* Slug */}
-              Product No.
+              Cat./Product No.
             </CTableHeaderCell>
             <CTableHeaderCell style={headerStyle}>
               Product Name
