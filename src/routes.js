@@ -66,7 +66,7 @@ const OfferBanners = React.lazy(() => import('./views/uiManagement/offerBanners/
 const MiscBanners = React.lazy(() => import('./views/uiManagement/miscBanners/MiscBanners'))
 const Categories = React.lazy(() => import('./views/uiManagement/categories/Categories'))
 const Carousel = React.lazy(() => import('./views/uiManagement/carousel/Carousel'))
-const NavbarColor = React.lazy(() => import('./views/uiManagement/navbarColor/NavbarColor'))
+const NavbarThemes = React.lazy(() => import('./views/uiManagement/navbarThemes/NavbarThemes'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -83,7 +83,7 @@ const routes = [
   { path: '/ui-management/misc-banners', name: 'Misc Banners', element: MiscBanners },
   { path: '/ui-management/categories', name: 'Categories', element: Categories },
   { path: '/ui-management/carousel', name: 'Carousel', element: Carousel },
-  { path: '/ui-management/navbar-color', name: 'Navbar Color', element: NavbarColor },
+  { path: '/ui-management/navbar-themes', name: 'Navbar Themes', element: NavbarThemes },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
