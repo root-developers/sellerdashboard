@@ -58,6 +58,15 @@ const Orders = React.lazy(() => import('./views/management/orders/Orders'))
 const Profit = React.lazy(() => import('./views/management/profit/Profit'))
 const Revenue = React.lazy(() => import('./views/management/revenue/Revenue'))
 const ContactUs = React.lazy(() => import('./views/management/contact/ContactUs'))
+const AllSellers = React.lazy(() => import('./views/management/allSellers/AllSellers'))
+
+// UI Management
+const UIManagement = React.lazy(() => import('./views/uiManagement/UIManagement'))
+const OfferBanners = React.lazy(() => import('./views/uiManagement/offerBanners/OfferBanners'))
+const MiscBanners = React.lazy(() => import('./views/uiManagement/miscBanners/MiscBanners'))
+const Categories = React.lazy(() => import('./views/uiManagement/categories/Categories'))
+const Carousel = React.lazy(() => import('./views/uiManagement/carousel/Carousel'))
+const NavbarColor = React.lazy(() => import('./views/uiManagement/navbarColor/NavbarColor'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -68,6 +77,13 @@ const routes = [
   { path: '/management/profit', name: 'Profit', element: Profit },
   { path: '/management/revenue', name: 'Revenue', element: Revenue },
   { path: '/management/contact', name: 'Contact Us', element: ContactUs },
+  { path: '/management/all-sellers', name: 'All Sellers', element: AllSellers },
+  { path: '/ui-management', name: 'UI Management', element: UIManagement, exact: true },
+  { path: '/ui-management/offer-banners', name: 'Offer Banners', element: OfferBanners },
+  { path: '/ui-management/misc-banners', name: 'Misc Banners', element: MiscBanners },
+  { path: '/ui-management/categories', name: 'Categories', element: Categories },
+  { path: '/ui-management/carousel', name: 'Carousel', element: Carousel },
+  { path: '/ui-management/navbar-color', name: 'Navbar Color', element: NavbarColor },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
