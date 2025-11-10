@@ -32,6 +32,10 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
   const [categories, setCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [categoriesError, setCategoriesError] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+  const [formError, setFormError] = useState('') // For general form errors
+  const [imageError, setImageError] = useState('') // For image-specific errors
 
   // useEffect to fetch categories
   useEffect(() => {
@@ -57,7 +61,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
       } catch (error) {
         console.error('Error fetching categories:', error)
         setCategoriesError('Failed to load categories.')
-        toast.error('Failed to load categories')
+        console.error('Failed to load categories')
       } finally {
         setCategoriesLoading(false)
       }
@@ -71,26 +75,218 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
     }
   }, [user?.token])
 
+  // Validation functions
+  const validateField = (name, value) => {
+    let error = ''
+
+    switch (name) {
+      case 'name':
+        if (!value.trim()) {
+          error = 'Product name is required'
+        } else if (value.trim().length < 3) {
+          error = 'Product name must be at least 3 characters'
+        } else if (value.trim().length > 100) {
+          error = 'Product name must not exceed 100 characters'
+        }
+        break
+
+      case 'description':
+        if (!value.trim()) {
+          error = 'Description is required'
+        } else if (value.trim().length < 10) {
+          error = 'Description must be at least 10 characters'
+        } else if (value.trim().length > 1000) {
+          error = 'Description must not exceed 1000 characters'
+        }
+        break
+
+      case 'price':
+        if (!value) {
+          error = 'Price is required'
+        } else if (isNaN(value) || parseFloat(value) <= 0) {
+          error = 'Price must be greater than 0'
+        } else if (parseFloat(value) > 1000000) {
+          error = 'Price must not exceed 1,000,000'
+        } else if (value.includes('.') && value.split('.')[1].length > 2) {
+          error = 'Price can only have up to two decimal places (e.g., 12.99)'
+        }
+        break
+
+      case 'category_id':
+        if (!value) {
+          error = 'Category is required'
+        }
+        break
+
+      case 'stock_quantity':
+        if (!value) {
+          error = 'Stock quantity is required'
+        } else if (isNaN(value) || parseInt(value) < 0) {
+          error = 'Stock quantity must be 0 or greater'
+        } else if (parseInt(value) > 1000000) {
+          error = 'Stock quantity must not exceed 1,000,000'
+        }
+        break
+
+      case 'brand':
+        if (!value.trim()) {
+          error = 'Brand is required'
+        } else if (value.trim().length < 2) {
+          error = 'Brand must be at least 2 characters'
+        } else if (value.trim().length > 50) {
+          error = 'Brand must not exceed 50 characters'
+        }
+        break
+
+      default:
+        break
+    }
+
+    return error
+  }
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    let { name, value } = e.target
+    if (name === 'price') {
+      // This regex allows:
+      // - an empty string
+      // - numbers (e.g., 123)
+      // - a decimal point (e.g., 123.)
+      // - numbers with one or two decimals (e.g., 123.4, 123.45)
+      const priceInputRegex = /^\d*(\.\d{0,2})?$/
+
+      // Check the value against the regex
+      if (!priceInputRegex.test(value)) {
+        return // stops the update, this will stop the user from typing invalid characters.
+      }
+      //   if (value && parseFloat(value) > 1000000) {
+      //     return
+      //   }
+    }
+
+    // if (name === 'stock_quantity') {
+    //   const stockRegex = /^\d*$/ // Regex for whole numbers only
+
+    //   // Check for valid format (no decimals, no negatives)
+    //   if (!stockRegex.test(value)) {
+    //     return
+    //   }
+
+    //   // max value (1,000,000)
+    //   if (value && parseInt(value) > 1000000) {
+    //     return
+    //   }
+    // }
+    if (name === 'description') {
+      if (value.length > 1000) {
+        return
+      }
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }))
+
+    // Validate on change if field was touched
+    if (touched[name]) {
+      const error = validateField(name, value)
+      setErrors((prev) => ({
+        ...prev,
+        [name]: error,
+      }))
+    }
+  }
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target
+    setTouched((prev) => ({
+      ...prev,
+      [name]: true,
+    }))
+
+    const error = validateField(name, value)
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }))
   }
 
   const handleImageChange = (e) => {
+    setImageError('') // Clear previous image errors
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0])
+      const file = e.target.files[0]
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+      if (!validTypes.includes(file.type)) {
+        setImageError('Invalid file type. Please use JPEG, PNG, GIF, or WebP.')
+        e.target.value = ''
+        return
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024 // 5MB
+      if (file.size > maxSize) {
+        setImageError('Image size must not exceed 5MB')
+        e.target.value = ''
+        return
+      }
+
+      setImageFile(file)
     }
+  }
+
+  // Check if form is valid
+  const isFormValid = () => {
+    const requiredFields = ['name', 'description', 'price', 'category_id', 'stock_quantity', 'brand']
+
+    // Check if all required fields are filled
+    for (const field of requiredFields) {
+      if (!formData[field] || formData[field].toString().trim() === '') {
+        return false
+      }
+    }
+
+    // Check if there are any validation errors
+    for (const field of requiredFields) {
+      const error = validateField(field, formData[field])
+      if (error) {
+        return false
+      }
+    }
+
+    return true
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setFormError('') // clear previous form submission errors
 
-    // Validation
-    if (!formData.name || !formData.price || !formData.category_id) {
-      toast.error('Please fill in all required fields')
+    // Mark all fields as touched
+    const allFields = ['name', 'description', 'price', 'category_id', 'stock_quantity', 'brand']
+    const newTouched = {}
+    const newErrors = {}
+
+    allFields.forEach((field) => {
+      newTouched[field] = true
+      const error = validateField(field, formData[field])
+      if (error) {
+        newErrors[field] = error
+      }
+    })
+
+    setTouched(newTouched)
+    setErrors(newErrors)
+
+    // If there are any errors, don't submit
+    if (Object.keys(newErrors).length > 0) {
+      setFormError('Please review the form. Some fields have errors.')
+      return
+    }
+
+    // Final validation check
+    if (!isFormValid()) {
+      setFormError('Please fill in all required fields correctly')
       return
     }
 
@@ -140,11 +336,16 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
         sku: '',
       })
       setImageFile(null)
+      setImageError('')
+      setFormError('')
+      setErrors({})
+      setTouched({})
 
+      toast.success('Product created successfully!')
       onProductAdded()
     } catch (error) {
       console.error('Error creating product:', error)
-      toast.error('Failed to create product')
+      setFormError('An unexpected error occurred. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -166,13 +367,21 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="e.g., Nike Air Max"
               required
+              minLength={3}
+              maxLength={100}
+              invalid={touched.name && !!errors.name}
             />
+            {touched.name && errors.name && (
+              <div className="invalid-feedback d-block">{errors.name}</div>
+            )}
           </CCol>
 
           <CCol md={6}>
-            <CFormLabel htmlFor="brand">Brand <span className="text-danger">*</span>
+            <CFormLabel htmlFor="brand">
+              Brand <span className="text-danger">*</span>
             </CFormLabel>
             <CFormInput
               type="text"
@@ -180,23 +389,43 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               name="brand"
               value={formData.brand}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="e.g., Nike"
+              required
+              minLength={2}
+              maxLength={50}
+              invalid={touched.brand && !!errors.brand}
             />
+            {touched.brand && errors.brand && (
+              <div className="invalid-feedback d-block">{errors.brand}</div>
+            )}
           </CCol>
         </CRow>
 
         <CRow className="mb-3">
           <CCol xs={12}>
-            <CFormLabel htmlFor="description">Description <span className="text-danger">*</span>
+            <CFormLabel htmlFor="description">
+              Description <span className="text-danger">*</span>
             </CFormLabel>
             <CFormTextarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Product description"
+              onBlur={handleBlur}
+              placeholder="Product description (minimum 10 characters)"
               rows="3"
+              required
+              minLength={10}
+              maxLength={1000}
+              invalid={touched.description && !!errors.description}
             />
+            {touched.description && errors.description && (
+              <div className="invalid-feedback d-block">{errors.description}</div>
+            )}
+            <small className="text-medium-emphasis">
+              {formData.description.length}/1000 characters
+            </small>
           </CCol>
         </CRow>
 
@@ -211,9 +440,17 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               name="price"
               value={formData.price}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="900"
               required
+              min="0.01"
+              max="1000000"
+              step="0.01"
+              invalid={touched.price && !!errors.price}
             />
+            {touched.price && errors.price && (
+              <div className="invalid-feedback d-block">{errors.price}</div>
+            )}
           </CCol>
 
           {/* <CCol md={4}>
@@ -240,13 +477,13 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               name="category_id"
               value={formData.category_id}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               required
               disabled={categoriesLoading}
+              invalid={touched.category_id && !!errors.category_id}
             >
               <option value="">
-                {categoriesLoading
-                  ? 'Loading...'
-                  : 'Select a category'}
+                {categoriesLoading ? 'Loading...' : 'Select a category'}
               </option>
               {!categoriesLoading &&
                 !categoriesError &&
@@ -256,13 +493,15 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
                   </option>
                 ))}
             </CFormSelect>
+            {touched.category_id && errors.category_id && (
+              <div className="invalid-feedback d-block">{errors.category_id}</div>
+            )}
             {categoriesError && <div className="text-danger small mt-1">{categoriesError}</div>}
           </CCol>
 
-
           <CCol md={4}>
-            <CFormLabel htmlFor="stock_quantity">Stock Quantity
-              <span className="text-danger">*</span>
+            <CFormLabel htmlFor="stock_quantity">
+              Stock Quantity <span className="text-danger">*</span>
             </CFormLabel>
             <CFormInput
               type="number"
@@ -270,8 +509,17 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               name="stock_quantity"
               value={formData.stock_quantity}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="10"
+              required
+              min="0"
+              max="100000"
+              step="1"
+              invalid={touched.stock_quantity && !!errors.stock_quantity}
             />
+            {touched.stock_quantity && errors.stock_quantity && (
+              <div className="invalid-feedback d-block">{errors.stock_quantity}</div>
+            )}
           </CCol>
         </CRow>
 
@@ -304,18 +552,42 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
         <CRow className="mb-4">
           <CCol xs={12}>
             <CFormLabel htmlFor="image">Product Image</CFormLabel>
-            <CFormInput type="file" id="image" accept="image/*" onChange={handleImageChange} />
+            <CFormInput
+              type="file"
+              id="image"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+              onChange={handleImageChange}
+            />
             {imageFile && (
-              <small className="text-medium-emphasis d-block mt-2">{imageFile.name}</small>
+              <small className="text-medium-emphasis d-block mt-2">
+                {imageFile.name} ({(imageFile.size / 1024).toFixed(2)} KB)
+              </small>
             )}
+            {imageError && <div className="text-danger small mt-1">{imageError}</div>}
+            <small className="text-muted d-block mt-1">
+              Accepted formats: JPEG, PNG, GIF, WebP (Max size: 5MB)
+            </small>
           </CCol>
         </CRow>
 
         <div className="d-flex gap-2 justify-content-end">
+          {/* Display general form error */}
+          {formError && (
+            <CRow className="mb-3">
+              <CCol>
+                <div className="text-danger text-end small">{formError}</div>
+              </CCol>
+            </CRow>
+          )}
           <CButton color="secondary" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </CButton>
-          <CButton color="success" type="submit" disabled={isSubmitting}>
+          <CButton
+            color="success"
+            type="submit"
+            disabled={isSubmitting || !isFormValid()}
+            title={!isFormValid() ? 'Please fill in all required fields correctly' : ''}
+          >
             {isSubmitting ? (
               <>
                 <CSpinner size="sm" className="me-2" />
