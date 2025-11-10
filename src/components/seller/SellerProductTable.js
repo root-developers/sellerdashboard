@@ -8,44 +8,60 @@ import {
 } from '@coreui/react'
 import SellerProductTableRow from './SellerProductTableRow'
 
-const SellerProductTable = ({ products, onRefresh }) => {
+const headerStyle = {
+  fontSize: '14px',
+  fontWeight: '600',
+  // textTransform: 'uppercase',
+  color: 'black',
+  letterSpacing: '0.5px',
+  // maxWidth: '30px',
+  textOverflow: 'ellipsis',
+  // whiteSpace: 'nowrap',
+  overflow: 'hidden',
+}
+
+const SellerProductTable = ({ products, onRefresh, onEdit }) => {
   const finalProducts = products.data?.products || products || []
 
   return (
     <div className="table-responsive">
       <CTable align="middle" className="mb-0 border" hover responsive>
         <CTableHead color="light">
-          <CTableRow style={{ fontSize: '13px', fontWeight: '600', letterSpacing: '-0.01em' }}>
-            <CTableHeaderCell 
-              className="text-center" 
+          <CTableRow>
+            <CTableHeaderCell
+              className="text-center"
+              style={headerStyle}
             >
               Image
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
+              {/* Slug */}
+              Cat./Product No.
+            </CTableHeaderCell>
+            <CTableHeaderCell style={headerStyle}>
               Product Name
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
               Brand
             </CTableHeaderCell>
-            <CTableHeaderCell >
+            <CTableHeaderCell style={headerStyle}>
+              Category Name
+            </CTableHeaderCell>
+            <CTableHeaderCell style={headerStyle}>
               Price
             </CTableHeaderCell>
-            <CTableHeaderCell 
+            <CTableHeaderCell
               className="text-center"
+              style={headerStyle}
             >
               Stock Status
             </CTableHeaderCell>
-            <CTableHeaderCell >
-              Category ID
-            </CTableHeaderCell>
-            <CTableHeaderCell >
+            {/* <CTableHeaderCell >
               SKU
-            </CTableHeaderCell>
-            <CTableHeaderCell >
-              Slug
-            </CTableHeaderCell>
-            <CTableHeaderCell 
-              className="text-center"  
+            </CTableHeaderCell> */}
+            <CTableHeaderCell
+              className="text-center"
+              style={headerStyle}
             >
               Actions
             </CTableHeaderCell>
@@ -58,12 +74,13 @@ const SellerProductTable = ({ products, onRefresh }) => {
                 key={product.id}
                 product={product}
                 onRefresh={onRefresh}
+                onEdit={onEdit}
               />
             ))
           ) : (
             <CTableRow>
-              <CTableHeaderCell 
-                colSpan="9" 
+              <CTableHeaderCell
+                colSpan="9"
                 className="text-center text-medium-emphasis py-4"
                 style={{ fontSize: '14px', fontWeight: '400' }}
               >

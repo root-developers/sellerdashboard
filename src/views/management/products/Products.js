@@ -11,12 +11,17 @@ import {
   CCollapse,
   CCardFooter,
   CPagination,
-  CPaginationItem
+  CPaginationItem,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilPlus, cilX } from '@coreui/icons'
 import { useSelector } from 'react-redux'
 import AddProductForm from '../../../components/seller/AddProductForm'
+import EditProductForm from '../../../components/seller/EditProductForm'
 import SellerProductTable from '../../../components/seller/SellerProductTable'
 import Config from '../../../config/Config'
 
@@ -29,6 +34,8 @@ const Products = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   // Fetch seller's products
   useEffect(() => {
@@ -75,6 +82,23 @@ const Products = () => {
     }
     // Set the new page, which will trigger the useEffect to re-fetch
     setCurrentPage(pageNumber)
+  }
+
+  const handleEditClick = (product) => {
+    setSelectedProduct(product)
+    setShowEditModal(true)
+  }
+
+  const handleEditCancel = () => {
+    setShowEditModal(false)
+    setSelectedProduct(null)
+  }
+
+  const handleProductUpdated = () => {
+    setShowEditModal(false)
+    setSelectedProduct(null)
+    setRefreshTrigger((prev) => prev + 1) // Refresh the product list
+    toast.success('Product updated successfully!')
   }
 
   return (
@@ -128,6 +152,7 @@ const Products = () => {
                 <SellerProductTable
                   products={products}
                   onRefresh={() => setRefreshTrigger((prev) => prev + 1)}
+                  onEdit={handleEditClick}
                 />
               )}
             </CCardBody>
@@ -163,6 +188,21 @@ const Products = () => {
           </CCard>
         </CCol>
       </CRow>
+      {/* --- Edit Product Modal --- */}
+      <CModal size="lg" visible={showEditModal} onClose={handleEditCancel}>
+        <CModalHeader>
+          <CModalTitle>Edit Product</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {selectedProduct && (
+            <EditProductForm
+              productToEdit={selectedProduct}
+              onProductUpdated={handleProductUpdated}
+              onCancel={handleEditCancel}
+            />
+          )}
+        </CModalBody>
+      </CModal>
     </>
   )
 }

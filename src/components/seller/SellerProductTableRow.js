@@ -16,16 +16,18 @@ import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPencil, cilTrash } from '@coreui/icons'
 import Config from '../../config/Config'
 
-const SellerProductTableRow = ({ product, onRefresh }) => {
+const textStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+
+const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  // const [isEditing, setIsEditing] = useState(false)
   const user = useSelector((state) => state.UserReducer.user)
 
   const handleDelete = async () => {
     if (!window.confirm(`Are you sure you want to delete "${product.name}"?`)) return
     setIsDeleting(true)
     try {
-      const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
+      const response = await fetch(`${Config.baseUrl}/products/${product.id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -42,25 +44,30 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
     }
   }
 
-  const handleEdit = async () => {
-    if (!window.confirm(`Are you sure you want to edit "${product.name}"?`)) return
-    setIsEditing(true)
-    try {
-      const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      if (!response.ok) throw new Error('Failed to edit product')
-      toast.success('Product edited successfully')
-      onRefresh()
-    } catch (error) {
-      toast.error('Failed to edit product')
-    } finally {
-      setIsEditing(false)
-    }
+  // const handleEdit = async () => {
+  //   if (!window.confirm(`Are you sure you want to edit "${product.name}"?`)) return
+  //   setIsEditing(true)
+  //   try {
+  //     const response = await fetch(`${Config.apiUrl}/products/${product.id}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         Authorization: `Bearer ${user.token}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //     })
+  //     if (!response.ok) throw new Error('Failed to edit product')
+  //     toast.success('Product edited successfully')
+  //     onRefresh()
+  //   } catch (error) {
+  //     toast.error('Failed to edit product')
+  //   } finally {
+  //     setIsEditing(false)
+  //   }
+  // }
+
+  const handleEdit = () => {
+    // use the onEdit prop 
+    onEdit(product)
   }
 
   const imageUrl =
@@ -83,81 +90,83 @@ const SellerProductTableRow = ({ product, onRefresh }) => {
         </div>
       </CTableDataCell>
       <CTableDataCell>
-        <div style={{ fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' }}>
+        <span style={textStyle}>
+          {product.category_id}-{product.slug || '-'}
+        </span>
+      </CTableDataCell>
+      <CTableDataCell>
+        <div style={textStyle}>
           {product.name}
         </div>
         {product.description && (
-          <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '2px' }}>
+          <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '2px', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {product.description.substring(0, 50)}
             {product.description.length > 50 ? '...' : ''}
           </div>
         )}
       </CTableDataCell>
       <CTableDataCell>
-        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
+        <span style={textStyle}>
           {product.brand || '-'}
         </span>
       </CTableDataCell>
       <CTableDataCell>
-        <span style={{ fontSize: '14px', fontWeight: '600', color: '#28a745' }}>
-          ₹{product.price}
+        <span style={textStyle}>
+          {product.category.name || '-'}
+        </span>
+      </CTableDataCell>
+      <CTableDataCell>
+        <span style={textStyle}>
+          ₹{parseFloat(product.price)}
         </span>
       </CTableDataCell>
       <CTableDataCell className="text-center">
         {product.stock_quantity > 0 ? (
-          <CBadge 
-            color="success" 
-            style={{ fontSize: '11px', fontWeight: '500', padding: '4px 8px' }}
+          <CBadge
+            color="success"
+            style={{ fontSize: '11px', fontWeight: '500', padding: '4px 4px' }}
           >
             In Stock ({product.stock_quantity})
           </CBadge>
         ) : (
-          <CBadge 
-            color="danger" 
-            style={{ fontSize: '11px', fontWeight: '500', padding: '4px 8px' }}
+          <CBadge
+            color="danger"
+            style={{ fontSize: '11px', fontWeight: '500', padding: '4px 4px' }}
           >
             Out of Stock
           </CBadge>
         )}
       </CTableDataCell>
-      <CTableDataCell>
-        <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
-          {product.category_id || '-'}
-        </span>
-      </CTableDataCell>
-      <CTableDataCell>
+      {/* <CTableDataCell>
         <span style={{ fontSize: '13px', color: '#6c757d', fontWeight: '400' }}>
           {product.sku || '-'}
         </span>
-      </CTableDataCell>
-      <CTableDataCell>
-        <span style={{ fontSize: '12px', color: '#6c757d', fontWeight: '400' }}>
-          {product.slug || '-'}
-        </span>
-      </CTableDataCell>
+      </CTableDataCell> */}
       <CTableDataCell className="text-center">
         <CDropdown alignment="end">
-          <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting || isEditing}>
-            {isDeleting || isEditing ? (
+          <CDropdownToggle color="ghost" size="sm" caret={false} disabled={isDeleting}
+            style={textStyle}>
+            {isDeleting ? (
               <CSpinner size="sm" />
             ) : (
               <CIcon icon={cilOptions} />
             )}
           </CDropdownToggle>
           <CDropdownMenu>
-            <CDropdownItem 
-              onClick={handleEdit} 
-              disabled={isEditing}
-              style={{ fontSize: '13px', fontWeight: '400' }}
+            <CDropdownItem
+              onClick={handleEdit}
+              // disabled={isEditing}
+              style={textStyle}
+              className='text-black'
             >
               <CIcon icon={cilPencil} className="me-2" />
-              {isEditing ? 'Editing...' : 'Edit'}
+              Edit
             </CDropdownItem>
-            <CDropdownItem 
-              onClick={handleDelete} 
-              disabled={isDeleting} 
+            <CDropdownItem
+              onClick={handleDelete}
+              disabled={isDeleting}
               className="text-danger"
-              style={{ fontSize: '13px', fontWeight: '400' }}
+              style={textStyle}
             >
               <CIcon icon={cilTrash} className="me-2" />
               {isDeleting ? 'Deleting...' : 'Delete'}
