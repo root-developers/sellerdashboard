@@ -16,7 +16,7 @@ import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPencil, cilTrash } from '@coreui/icons'
 import Config from '../../config/Config'
 
-const textStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '150px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const textStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '200px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
 const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
   const [isDeleting, setIsDeleting] = useState(false)

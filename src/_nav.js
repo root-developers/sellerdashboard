@@ -28,6 +28,7 @@ import {
   cilFolderOpen,
   cilApplications,
   cilColorPalette,
+  cilContrast,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 

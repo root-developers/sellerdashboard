@@ -91,9 +91,9 @@ const Login = () => {
           token: response.data.data.token
         }
 
-        // Check if user is a seller
-        if (userData.role !== Config.userType.SELLER) {
-          setError('Access denied. This portal is for sellers only.')
+        // Check if the user is a seller or admin
+        if (userData.role !== Config.userType.SELLER && userData.role !== Config.userType.ADMIN) {
+          setError('Access denied. This portal is for sellers and the admin only.')
           setIsLoading(false)
           return
         }
@@ -133,7 +133,7 @@ const Login = () => {
                 <CCardBody>
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
-                    <p className="text-body-secondary">Sign In to your seller account</p>
+                    <p className="text-body-secondary">Sign in to your account</p>
                     
                     {error && (
                       <CAlert color="danger" dismissible onClose={() => setError('')}>
