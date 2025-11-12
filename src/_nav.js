@@ -27,6 +27,7 @@ import {
   cilFolderOpen,
   cilApplications,
   cilColorPalette,
+  cilContrast,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -105,9 +106,9 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Navbar Color',
-        to: '/ui-management/navbar-color',
-        icon: <CIcon icon={cilColorPalette} customClassName="nav-icon" />,
+        name: 'Navbar Themes',
+        to: '/ui-management/navbar-themes',
+        icon: <CIcon icon={cilContrast} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
