@@ -1,5 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
+import Config from './config/Config'
 import {
   cilBell,
   cilCalculator,
@@ -51,21 +52,21 @@ const _nav = [
         name: 'Products',
         to: '/management/products',
         icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.SELLER, Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Orders',
         to: '/management/orders',
         icon: <CIcon icon={cilLayers} customClassName="nav-icon" />,
-        badge: {
-          color: 'info',
-        },
+        allowedRoles: [Config.userType.SELLER, Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'All Sellers',
         to: '/management/all-sellers',
         icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
@@ -96,30 +97,35 @@ const _nav = [
         name: 'Categories',
         to: '/ui-management/categories',
         icon: <CIcon icon={cilApplications} customClassName="nav-icon" />,
+         allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Carousel',
         to: '/ui-management/carousel',
-        icon: <CIcon icon={cilImage} customClassName="nav-icon" />, 
+        icon: <CIcon icon={cilImage} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Navbar Color',
         to: '/ui-management/navbar-color',
         icon: <CIcon icon={cilColorPalette} customClassName="nav-icon" />,
+         allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Offer Banners',
         to: '/ui-management/offer-banners',
         icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
+         allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Misc Banners',
         to: '/ui-management/misc-banners',
         icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.ADMIN],
       },
     ],
   }
