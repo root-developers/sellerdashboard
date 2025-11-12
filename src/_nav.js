@@ -98,7 +98,7 @@ const _nav = [
         name: 'Categories',
         to: '/ui-management/categories',
         icon: <CIcon icon={cilApplications} customClassName="nav-icon" />,
-         allowedRoles: [Config.userType.ADMIN],
+        allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
@@ -109,17 +109,17 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Navbar Color',
-        to: '/ui-management/navbar-color',
-        icon: <CIcon icon={cilColorPalette} customClassName="nav-icon" />,
-         allowedRoles: [Config.userType.ADMIN],
+        name: 'Navbar Themes',
+        to: '/ui-management/navbar-themes',
+        icon: <CIcon icon={cilContrast} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
         name: 'Offer Banners',
         to: '/ui-management/offer-banners',
         icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
-         allowedRoles: [Config.userType.ADMIN],
+        allowedRoles: [Config.userType.ADMIN],
       },
       {
         component: CNavItem,
