@@ -290,7 +290,7 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
           />
           {imageError && <div className="text-danger small mt-1">{imageError}</div>}
           <small className="text-muted d-block mt-1">
-            Upload a new file only if you want to replace the current one.
+            Upload a new file if you want to replace the current one.
           </small>
         </CCol>
         <CCol md={3} className="d-flex align-items-center pt-3">
