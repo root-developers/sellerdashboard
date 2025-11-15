@@ -160,7 +160,7 @@ const Register = () => {
 
     try {
       // API call to register new seller
-      const response = await axios.post(`${Config.apiUrl}/auth/register`, {
+      const response = await axios.post(`${Config.baseUrl}/auth/register`, {
         first_name: formData.firstName.trim(),
         email: formData.email.trim(),
         password: formData.password,
