@@ -80,7 +80,7 @@ const Login = () => {
 
     try {
       // API call to login
-      const response = await axios.post(`${Config.apiUrl}/auth/login`, {
+      const response = await axios.post(`${Config.baseUrl}/auth/login`, {
         email: formData.email.trim(),
         password: formData.password
       })
