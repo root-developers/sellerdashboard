@@ -183,7 +183,6 @@ const Login = () => {
                           {isLoading ? (
                             <>
                               <CSpinner size="sm" className="me-2" />
-                              Logging in...
                             </>
                           ) : (
                             'Login'
