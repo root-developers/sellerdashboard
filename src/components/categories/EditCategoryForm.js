@@ -183,9 +183,9 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
 
     try {
       const submitData = new FormData()
-      submitData.append('name', formData.name)
-      submitData.append('description', formData.description || '')
-      submitData.append('slug', formData.slug)
+      submitData.append('name', formData.name.trim())
+      submitData.append('description', formData.description.trim())
+      submitData.append('slug', formData.slug.trim())
       submitData.append('is_active', formData.is_active)
       if (imageFile) {
         submitData.append('image', imageFile) // New image file
@@ -196,8 +196,8 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
       const response = await fetch(`${Config.baseUrl}/categories/${categoryToEdit.id}`, {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${user.token}`,
-          // No 'Content-Type', browser sets it for FormData
+          'authorization': user.token,
+          'id': user.userId || user.id,
         },
         body: submitData,
       })
