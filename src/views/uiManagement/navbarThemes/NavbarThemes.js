@@ -29,7 +29,7 @@ import { cilOptions, cilPencil, cilPlus, cilTrash, cilX } from '@coreui/icons'
 import AddNavbarTheme from '../../../components/navbarThemes/AddNavbarTheme'
 import EditNavbarTheme from '../../../components/navbarThemes/EditNavbarTheme'
 import { useSelector } from 'react-redux'
-// import { toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 const NavbarThemes = () => {
   const user = useSelector((state) => state.UserReducer.user)
@@ -55,7 +55,7 @@ const NavbarThemes = () => {
           Authorization: `Bearer ${user.token}`,
         },
       })
-      // toast.success('Theme deleted successfully')
+      toast.success('Theme deleted successfully')
       handleRefresh()
     } catch (error) {
       console.error(error.response?.data?.message || 'Failed to delete theme')
