@@ -1,6 +1,8 @@
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+// const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const SellerDashboard = React.lazy(() => import('./views/sellerDashboard/SellerDashboard'))
+const AdminDashboard = React.lazy(() => import('./views/adminDashboard/AdminDashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 const Profile = React.lazy(() => import('./views/pages/profile/Profile'))
@@ -70,7 +72,9 @@ const NavbarThemes = React.lazy(() => import('./views/uiManagement/navbarThemes/
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  // { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/seller-dashboard', name: 'SellerDashboard', element: SellerDashboard },
+  { path: '/admin-dashboard', name: 'AdminDashboard', element: AdminDashboard },
   { path: '/management', name: 'Management', element: Management, exact: true },
   { path: '/management/products', name: 'Products', element: Products },
   { path: '/management/orders', name: 'Orders', element: Orders },

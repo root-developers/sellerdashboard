@@ -36,11 +36,25 @@ const AppSidebar = () => {
     const role = user.role
     const allowedNav = []
 
+    // navigation.forEach((navItem) => {
+    //   // Dashboard for all 
+    //   if (navItem.to === '/dashboard') {
+    //     allowedNav.push(navItem)
+    //     return
+    //   }
     navigation.forEach((navItem) => {
-      // Dashboard for all 
-      if (navItem.to === '/dashboard') {
-        allowedNav.push(navItem)
-        return
+      if (role === Config.userType.SELLER) {
+        // If navItem has allowedRoles and includes SELLER
+        if (navItem.allowedRoles && navItem.allowedRoles.includes(Config.userType.SELLER)) {
+          allowedNav.push(navItem)
+          return
+        }
+      } else if (role === Config.userType.ADMIN) {
+        // If navItem has allowedRoles and includes ADMIN
+        if (navItem.allowedRoles && navItem.allowedRoles.includes(Config.userType.ADMIN)) {
+          allowedNav.push(navItem)
+          return
+        }
       }
 
       // Management Group

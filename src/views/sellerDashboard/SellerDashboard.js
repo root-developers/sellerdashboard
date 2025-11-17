@@ -52,9 +52,9 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
-import MainChart from './MainChart'
+import SellerMainChart from './SellerMainChart'
 
-const Dashboard = () => {
+const SellerDashboard = () => {
   const progressExample = [
     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
     { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
@@ -206,7 +206,7 @@ const Dashboard = () => {
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChart />
+          <SellerMainChart />
         </CCardBody>
         <CCardFooter>
           <CRow
@@ -233,13 +233,13 @@ const Dashboard = () => {
           </CRow>
         </CCardFooter>
       </CCard>
-      <WidgetsBrand className="mb-4" withCharts />
+      {/* <WidgetsBrand className="mb-4" withCharts /> */}
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
             <CCardBody>
-              <CRow>
+              {/* <CRow>
                 <CCol xs={12} md={6} xl={6}>
                   <CRow>
                     <CCol xs={6}>
@@ -319,7 +319,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </CCol>
-              </CRow>
+              </CRow> */}
 
               <br />
 
@@ -384,4 +384,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default SellerDashboard

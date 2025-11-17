@@ -35,13 +35,26 @@ import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
   {
     component: CNavItem,
-    name: 'Dashboard',
-    to: '/dashboard',
+    name: 'Seller Dashboard',
+    to: '/seller-dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
+    allowedRoles: [Config.userType.SELLER],
+    // badge: {
+    //   color: 'info',
+    //   text: 'NEW',
+    // },
+  },
+
+  {
+    component: CNavItem,
+    name: 'Admin Dashboard',
+    to: '/admin-dashboard',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    allowedRoles: [Config.userType.ADMIN],
+    // badge: {
+    //   color: 'info',
+    //   text: 'NEW',
+    // },
   },
 
   {
