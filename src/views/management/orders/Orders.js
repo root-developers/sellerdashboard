@@ -157,7 +157,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                 </CTableDataCell>
                 <CTableDataCell>
                     <span style={subTextStyle}>
-                        Rs. {parseFloat(order.total_amount).toLocaleString()}
+                        Rs. {parseFloat(order.total_amount).toFixed(2).toLocaleString()}
                     </span>
                 </CTableDataCell>
                 <CTableDataCell>
@@ -227,10 +227,10 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                                                 <span style={subTextStyle}>{product.quantity}</span>
                                             </CTableDataCell>
                                             <CTableDataCell>
-                                                <span style={subTextStyle}>Rs. {parseFloat(product.unit_price).toLocaleString()}</span>
+                                                <span style={subTextStyle}>Rs. {parseFloat(product.unit_price).toFixed(2).toLocaleString()}</span>
                                             </CTableDataCell>
                                             <CTableDataCell>
-                                                <span style={subTextStyle}>Rs. {parseFloat(product.total_price).toLocaleString()}</span>
+                                                <span style={subTextStyle}>Rs. {parseFloat(product.total_price).toFixed(2).toLocaleString()}</span>
                                             </CTableDataCell>
                                         </CTableRow>
                                     ))}
@@ -332,7 +332,7 @@ const Orders = () => {
                     buyer_last_name: item.buyer_last_name,
                     buyer_email: item.buyer_email,
                     phone: item.phone,
-                    total_amount: parseFloat(item.total_amount) || 0, // Use total_amount for the whole order
+                    total_amount: parseFloat(item.total_amount).toFixed(2) || 0, // Use total_amount for the whole order
                     status: item.status,
                     notes: item.notes,
                     tracking_number: item.tracking_number,
@@ -366,7 +366,7 @@ const Orders = () => {
             return validOrders.find(o => o.order_id === orderId);
         });
 
-        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (parseFloat(order.total_amount) || 0), 0);
+        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (parseFloat(order.total_amount).toFixed(2) || 0), 0);
 
         return {
             totalOrders: totalOrderCount, // pagination total_items
