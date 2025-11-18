@@ -117,7 +117,7 @@ const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
       </CTableDataCell>
       <CTableDataCell>
         <span style={textStyle}>
-          ₹{parseFloat(product.price)}
+          ₹{parseFloat(product.price).toFixed(2)}
         </span>
       </CTableDataCell>
       <CTableDataCell className="text-center">
