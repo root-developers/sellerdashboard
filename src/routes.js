@@ -69,6 +69,7 @@ const MiscBanners = React.lazy(() => import('./views/uiManagement/miscBanners/Mi
 const Categories = React.lazy(() => import('./views/uiManagement/categories/Categories'))
 const Carousel = React.lazy(() => import('./views/uiManagement/carousel/Carousel'))
 const NavbarThemes = React.lazy(() => import('./views/uiManagement/navbarThemes/NavbarThemes'))
+const Leads = React.lazy(() => import('./views/uiManagement/leads/Leads'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -88,6 +89,7 @@ const routes = [
   { path: '/ui-management/categories', name: 'Categories', element: Categories },
   { path: '/ui-management/carousel', name: 'Carousel', element: Carousel },
   { path: '/ui-management/navbar-themes', name: 'Navbar Themes', element: NavbarThemes },
+  { path: '/ui-management/leads', name: 'Leads', element: Leads },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },

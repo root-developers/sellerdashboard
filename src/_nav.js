@@ -141,6 +141,12 @@ const _nav = [
         icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
         allowedRoles: [Config.userType.ADMIN],
       },
+      {
+        component: CNavItem,
+        name: 'Leads',
+        to: '/ui-management/leads',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+      },
     ],
   }
   // {
