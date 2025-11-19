@@ -142,7 +142,7 @@ const WidgetsDropdown = ({ className, stats }) => {
               Rs. {stats?.total_revenue ? stats.total_revenue.toLocaleString() : '0'}
             </>
           }
-          title="Income"
+          title="Total Revenue"
           // action={
           //   <CDropdown alignment="end">
           //     <CDropdownToggle color="transparent" caret={false} className="text-white p-0">
