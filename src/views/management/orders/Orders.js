@@ -63,11 +63,13 @@ const ORDER_STATUS = {
 // Style Constants for Consistency
 const textStyle = { fontSize: '14px', fontWeight: '500', color: '#2c3e50', letterSpacing: '-0.01em' };
 const subTextStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '200px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' };
-const subHeaderStyle = { fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px', 
+const subHeaderStyle = {
+    fontSize: '14px', fontWeight: '600', textTransform: 'uppercase', color: 'black', letterSpacing: '0.5px',
     // maxWidth: '30px',
     textOverflow: 'ellipsis',
     // whiteSpace: 'nowrap',
-    overflow: 'hidden' };
+    overflow: 'hidden'
+};
 
 // function to format date
 const formatDate = (dateString) => {
@@ -166,7 +168,7 @@ const OrderRow = React.memo(({ order, onUpdateStatus, getStatusBadge }) => {
                 <CTableDataCell className="text-center">
                     <CDropdown alignment="end">
                         <CDropdownToggle color="ghost" size="sm" caret={false}
-                        style={subTextStyle}>
+                            style={subTextStyle}>
                             <CIcon icon={cilOptions} />
                         </CDropdownToggle>
                         <CDropdownMenu>
@@ -259,6 +261,14 @@ const Orders = () => {
         notes: '',
     })
 
+    // Stats state
+    const [dashboardStats, setDashboardStats] = useState({
+        total_orders: 0,
+        pending_orders: 0,
+        delivered_orders: 0,
+        cancelled_orders: 0
+    })
+
     // Orders data from API
     const [orders, setOrders] = useState([])
 
@@ -270,10 +280,32 @@ const Orders = () => {
     const user = useSelector((state) => state.UserReducer.user)
     const role = user?.role
 
-    // Fetch orders from API on component mount
+    // Fetch orders stats from API
     useEffect(() => {
-        fetchOrders(currentPage)
+        fetchOrders(currentPage);
+        fetchDashboardStats();
     }, [currentPage]) //Re-fetch when currentPage changes
+
+    // GET /seller/dashboard-overview - Fetch stats
+    const fetchDashboardStats = async () => {
+        try {
+            const response = await axios.get(
+                `${Config.baseUrl}/seller/dashboard-overview`,
+                Config.AxiosConfig()
+            )
+            if (response.data && response.data.success) {
+                const statsData = response.data.data || response.data;
+                setDashboardStats({
+                    total_orders: statsData.total_orders || 0,
+                    pending_orders: statsData.pending_orders || 0,
+                    delivered_orders: statsData.delivered_orders || 0,
+                    cancelled_orders: statsData.cancelled_orders || 0,
+                });
+            }
+        } catch (err) {
+            console.error('Error fetching dashboard stats:', err);
+        }
+    }
 
     // GET /seller/orders - Fetch all seller orders
     const fetchOrders = async (page = 1) => {
@@ -353,30 +385,30 @@ const Orders = () => {
         return Array.from(groups.values());
     }, [orders]);
 
-    const stats = useMemo(() => {
-        const validOrders = Array.isArray(orders) ? orders : [];
+    // const stats = useMemo(() => {
+    //     const validOrders = Array.isArray(orders) ? orders : [];
 
-        const totalOrderCount = pagination ? pagination.total_items : 0;
+    //     const totalOrderCount = pagination ? pagination.total_items : 0;
 
-        // Create a Set of unique order IDs to avoid double-counting
-        const uniqueOrderIds = new Set(validOrders.map(o => o.order_id));
+    //     // Create a Set of unique order IDs to avoid double-counting
+    //     const uniqueOrderIds = new Set(validOrders.map(o => o.order_id));
 
-        // Calculate revenue from unique orders only
-        const uniqueOrders = Array.from(uniqueOrderIds).map(orderId => {
-            return validOrders.find(o => o.order_id === orderId);
-        });
+    //     // Calculate revenue from unique orders only
+    //     const uniqueOrders = Array.from(uniqueOrderIds).map(orderId => {
+    //         return validOrders.find(o => o.order_id === orderId);
+    //     });
 
-        const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (parseFloat(order.total_amount).toFixed(2) || 0), 0);
+    //     const totalRevenue = uniqueOrders.reduce((sum, order) => sum + (parseFloat(order.total_amount).toFixed(2) || 0), 0);
 
-        return {
-            totalOrders: totalOrderCount, // pagination total_items
-            totalRevenue: totalRevenue,
-            pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
-            avgOrderValue: uniqueOrderIds.size > 0
-                ? totalRevenue / uniqueOrderIds.size
-                : 0,
-        }
-    }, [orders, pagination])
+    //     return {
+    //         totalOrders: totalOrderCount, // pagination total_items
+    //         totalRevenue: totalRevenue,
+    //         pendingOrders: uniqueOrders.filter(o => o.status === ORDER_STATUS.PENDING).length,
+    //         avgOrderValue: uniqueOrderIds.size > 0
+    //             ? totalRevenue / uniqueOrderIds.size
+    //             : 0,
+    //     }
+    // }, [orders, pagination])
 
 
     // PUT /:id/status - Update order status
@@ -395,6 +427,7 @@ const Orders = () => {
             if (response.data && response.data.success) {
                 // Refresh the list to show updated status
                 fetchOrders(currentPage);
+                fetchDashboardStats();
                 handleCloseModal()
                 toast.success('Order status updated successfully!')
             } else {
@@ -488,7 +521,7 @@ const Orders = () => {
                 <CCardBody>
                     <div className="text-center text-danger py-4">
                         <p>{error}</p>
-                        <CButton color="primary" onClick={() => fetchOrders(1)}>
+                        <CButton color="primary" onClick={() => { fetchOrders(1); fetchDashboardStats(); }}>
                             Retry
                         </CButton>
                     </div>
@@ -502,20 +535,20 @@ const Orders = () => {
             {/* Stats Cards */}
             <CRow className="mb-4">
                 <StatCard
-                    value={stats.totalOrders}
+                    value={dashboardStats.total_orders}
                     description="Total Orders"
                 />
                 <StatCard
-                    value={stats.pendingOrders}
+                    value={dashboardStats.pending_orders}
                     description="Pending Orders"
                 />
                 <StatCard
-                    value={stats.totalRevenue}
-                    description="Total Revenue"
+                    value={dashboardStats.delivered_orders}
+                    description="Delivered Orders"
                 />
                 <StatCard
-                    value={Math.round(stats.avgOrderValue)}
-                    description="Avg. Order Value"
+                    value={dashboardStats.cancelled_orders}
+                    description="Cancelled Orders"
                 />
             </CRow>
 
