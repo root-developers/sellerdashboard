@@ -102,7 +102,8 @@ const Login = () => {
         dispatch(Save_User(userData))
 
         // Navigate to dashboard
-        navigate('/dashboard')
+        // navigate('/dashboard')
+        {userData.role === Config.userType.ADMIN ? navigate('/admin-dashboard') : navigate('/seller-dashboard')}
       } else {
         setError(response.data?.message || 'Login failed. Please check your credentials.')
       }
