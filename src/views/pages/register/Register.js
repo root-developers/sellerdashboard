@@ -35,7 +35,8 @@ const Register = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && user.token) {
-      navigate('/dashboard')
+      // navigate('/dashboard')
+      { userData.role === Config.userType.SELLER ? navigate('/seller-dashboard') : navigate('/admin-dashboard') }
     }
   }, [user, navigate])
 
@@ -179,7 +180,8 @@ const Register = () => {
         dispatch(Save_User(userData))
 
         // Navigate to dashboard
-        navigate('/dashboard')
+        // navigate('/dashboard')
+        { userData.role === Config.userType.SELLER ? navigate('/seller-dashboard') : navigate('/admin-dashboard') }
       } else {
         setErrors({ general: response.data?.message || 'Registration failed. Please try again.' })
       }
