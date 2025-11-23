@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
+import axios from 'axios'
+import Config from '../../config/Config'
 
 import {
   CAvatar,
@@ -43,142 +45,176 @@ import {
   cilUserFemale,
 } from '@coreui/icons'
 
-import avatar1 from 'src/assets/images/avatars/1.jpg'
-import avatar2 from 'src/assets/images/avatars/2.jpg'
-import avatar3 from 'src/assets/images/avatars/3.jpg'
-import avatar4 from 'src/assets/images/avatars/4.jpg'
-import avatar5 from 'src/assets/images/avatars/5.jpg'
-import avatar6 from 'src/assets/images/avatars/6.jpg'
+// import avatar1 from 'src/assets/images/avatars/1.jpg'
+// import avatar2 from 'src/assets/images/avatars/2.jpg'
+// import avatar3 from 'src/assets/images/avatars/3.jpg'
+// import avatar4 from 'src/assets/images/avatars/4.jpg'
+// import avatar5 from 'src/assets/images/avatars/5.jpg'
+// import avatar6 from 'src/assets/images/avatars/6.jpg'
 
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import AdminMainChart from './AdminMainChart'
 
 const AdminDashboard = () => {
-  const progressExample = [
-    { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
-    { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
-    { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
-    { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
-    { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
-  ]
+  const [adminDashboardStats, setAdminDashboardStats] = useState({
+    total_products: 0,
+    total_revenue: 0,
+    total_users: 0,
+    total_sellers: 0,
+    total_categories: 0,
+    top_selling_products: []
+  })
+  // const progressExample = [
+  //   { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
+  //   { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
+  //   { title: 'Pageviews', value: '78.706 Views', percent: 60, color: 'warning' },
+  //   { title: 'New Users', value: '22.123 Users', percent: 80, color: 'danger' },
+  //   { title: 'Bounce Rate', value: 'Average Rate', percent: 40.15, color: 'primary' },
+  // ]
 
-  const progressGroupExample1 = [
-    { title: 'Monday', value1: 34, value2: 78 },
-    { title: 'Tuesday', value1: 56, value2: 94 },
-    { title: 'Wednesday', value1: 12, value2: 67 },
-    { title: 'Thursday', value1: 43, value2: 91 },
-    { title: 'Friday', value1: 22, value2: 73 },
-    { title: 'Saturday', value1: 53, value2: 82 },
-    { title: 'Sunday', value1: 9, value2: 69 },
-  ]
+  // const progressGroupExample1 = [
+  //   { title: 'Monday', value1: 34, value2: 78 },
+  //   { title: 'Tuesday', value1: 56, value2: 94 },
+  //   { title: 'Wednesday', value1: 12, value2: 67 },
+  //   { title: 'Thursday', value1: 43, value2: 91 },
+  //   { title: 'Friday', value1: 22, value2: 73 },
+  //   { title: 'Saturday', value1: 53, value2: 82 },
+  //   { title: 'Sunday', value1: 9, value2: 69 },
+  // ]
 
-  const progressGroupExample2 = [
-    { title: 'Male', icon: cilUser, value: 53 },
-    { title: 'Female', icon: cilUserFemale, value: 43 },
-  ]
+  // const progressGroupExample2 = [
+  //   { title: 'Male', icon: cilUser, value: 53 },
+  //   { title: 'Female', icon: cilUserFemale, value: 43 },
+  // ]
 
-  const progressGroupExample3 = [
-    { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
-    { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
-    { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
-    { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
-  ]
+  // const progressGroupExample3 = [
+  //   { title: 'Organic Search', icon: cibGoogle, percent: 56, value: '191,235' },
+  //   { title: 'Facebook', icon: cibFacebook, percent: 15, value: '51,223' },
+  //   { title: 'Twitter', icon: cibTwitter, percent: 11, value: '37,564' },
+  //   { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
+  // ]
 
-  const tableExample = [
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Yiorgos Avraamu',
-        new: true,
-        registered: 'Jan 1, 2023',
-      },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
-    },
-    {
-      avatar: { src: avatar2, status: 'danger' },
-      user: {
-        name: 'Avram Tarasios',
-        new: false,
-        registered: 'Jan 1, 2023',
-      },
-      country: { name: 'Brazil', flag: cifBr },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'info',
-      },
-      payment: { name: 'Visa', icon: cibCcVisa },
-      activity: '5 minutes ago',
-    },
-    {
-      avatar: { src: avatar3, status: 'warning' },
-      user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2023' },
-      country: { name: 'India', flag: cifIn },
-      usage: {
-        value: 74,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'warning',
-      },
-      payment: { name: 'Stripe', icon: cibCcStripe },
-      activity: '1 hour ago',
-    },
-    {
-      avatar: { src: avatar4, status: 'secondary' },
-      user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2023' },
-      country: { name: 'France', flag: cifFr },
-      usage: {
-        value: 98,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'danger',
-      },
-      payment: { name: 'PayPal', icon: cibCcPaypal },
-      activity: 'Last month',
-    },
-    {
-      avatar: { src: avatar5, status: 'success' },
-      user: {
-        name: 'Agapetus Tadeáš',
-        new: true,
-        registered: 'Jan 1, 2023',
-      },
-      country: { name: 'Spain', flag: cifEs },
-      usage: {
-        value: 22,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'primary',
-      },
-      payment: { name: 'Google Wallet', icon: cibCcApplePay },
-      activity: 'Last week',
-    },
-    {
-      avatar: { src: avatar6, status: 'danger' },
-      user: {
-        name: 'Friderik Dávid',
-        new: true,
-        registered: 'Jan 1, 2023',
-      },
-      country: { name: 'Poland', flag: cifPl },
-      usage: {
-        value: 43,
-        period: 'Jun 11, 2023 - Jul 10, 2023',
-        color: 'success',
-      },
-      payment: { name: 'Amex', icon: cibCcAmex },
-      activity: 'Last week',
-    },
-  ]
+  // const tableExample = [
+  //   {
+  //     avatar: { src: avatar1, status: 'success' },
+  //     user: {
+  //       name: 'Yiorgos Avraamu',
+  //       new: true,
+  //       registered: 'Jan 1, 2023',
+  //     },
+  //     country: { name: 'USA', flag: cifUs },
+  //     usage: {
+  //       value: 50,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'success',
+  //     },
+  //     payment: { name: 'Mastercard', icon: cibCcMastercard },
+  //     activity: '10 sec ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar2, status: 'danger' },
+  //     user: {
+  //       name: 'Avram Tarasios',
+  //       new: false,
+  //       registered: 'Jan 1, 2023',
+  //     },
+  //     country: { name: 'Brazil', flag: cifBr },
+  //     usage: {
+  //       value: 22,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'info',
+  //     },
+  //     payment: { name: 'Visa', icon: cibCcVisa },
+  //     activity: '5 minutes ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar3, status: 'warning' },
+  //     user: { name: 'Quintin Ed', new: true, registered: 'Jan 1, 2023' },
+  //     country: { name: 'India', flag: cifIn },
+  //     usage: {
+  //       value: 74,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'warning',
+  //     },
+  //     payment: { name: 'Stripe', icon: cibCcStripe },
+  //     activity: '1 hour ago',
+  //   },
+  //   {
+  //     avatar: { src: avatar4, status: 'secondary' },
+  //     user: { name: 'Enéas Kwadwo', new: true, registered: 'Jan 1, 2023' },
+  //     country: { name: 'France', flag: cifFr },
+  //     usage: {
+  //       value: 98,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'danger',
+  //     },
+  //     payment: { name: 'PayPal', icon: cibCcPaypal },
+  //     activity: 'Last month',
+  //   },
+  //   {
+  //     avatar: { src: avatar5, status: 'success' },
+  //     user: {
+  //       name: 'Agapetus Tadeáš',
+  //       new: true,
+  //       registered: 'Jan 1, 2023',
+  //     },
+  //     country: { name: 'Spain', flag: cifEs },
+  //     usage: {
+  //       value: 22,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'primary',
+  //     },
+  //     payment: { name: 'Google Wallet', icon: cibCcApplePay },
+  //     activity: 'Last week',
+  //   },
+  //   {
+  //     avatar: { src: avatar6, status: 'danger' },
+  //     user: {
+  //       name: 'Friderik Dávid',
+  //       new: true,
+  //       registered: 'Jan 1, 2023',
+  //     },
+  //     country: { name: 'Poland', flag: cifPl },
+  //     usage: {
+  //       value: 43,
+  //       period: 'Jun 11, 2023 - Jul 10, 2023',
+  //       color: 'success',
+  //     },
+  //     payment: { name: 'Amex', icon: cibCcAmex },
+  //     activity: 'Last week',
+  //   },
+  // ]
+
+  useEffect(() => {
+    fetchAdminDashboard()
+  }, [])
+
+  const fetchAdminDashboard = async () => {
+    try {
+      const response = await axios.get(
+        `${Config.baseUrl}/admin/dashboard-overview`,
+        Config.AxiosConfig()
+      )
+      if (response.data && response.data.success) {
+        const data = response.data.data || response.data;
+        setAdminDashboardStats({
+          total_products: data.stats.total_products,
+          total_revenue: data.stats.total_revenue,
+          total_users: data.stats.total_users,
+          total_sellers: data.stats.total_sellers,
+          total_categories: data.stats.total_categories,
+          top_selling_products: data.top_selling_products || []
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard overview:", error)
+    }
+  }
 
   return (
     <>
-      <WidgetsDropdown className="mb-4" />
+      <WidgetsDropdown className="mb-4" stats={adminDashboardStats} />
       <CCard className="mb-4">
         <CCardBody>
           <CRow>
@@ -208,7 +244,7 @@ const AdminDashboard = () => {
           </CRow>
           <AdminMainChart />
         </CCardBody>
-        <CCardFooter>
+        {/* <CCardFooter>
           <CRow
             xs={{ cols: 1, gutter: 4 }}
             sm={{ cols: 2 }}
@@ -231,13 +267,13 @@ const AdminDashboard = () => {
               </CCol>
             ))}
           </CRow>
-        </CCardFooter>
+        </CCardFooter> */}
       </CCard>
       {/* <WidgetsBrand className="mb-4" withCharts /> */}
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>Traffic {' & '} Sales</CCardHeader>
+            <CCardHeader>Top Selling Products</CCardHeader>
             <CCardBody>
               {/* <CRow>
                 <CCol xs={12} md={6} xl={6}>
@@ -327,50 +363,51 @@ const AdminDashboard = () => {
                 <CTableHead className="text-nowrap">
                   <CTableRow>
                     <CTableHeaderCell className="bg-body-tertiary text-center">
-                      <CIcon icon={cilPeople} />
+                      {/* <CIcon icon={cilPeople} /> */}
+                      Product ID
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">User</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Country
+                    <CTableHeaderCell className="bg-body-tertiary">Image</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">Product Name</CTableHeaderCell>
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Price
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Usage</CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary text-center">
-                      Payment Method
+                    {/* <CTableHeaderCell className="bg-body-tertiary">Category Name</CTableHeaderCell> */}
+                    <CTableHeaderCell className="bg-body-tertiary">
+                      Total Sold
                     </CTableHeaderCell>
-                    <CTableHeaderCell className="bg-body-tertiary">Activity</CTableHeaderCell>
+
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {tableExample.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
+                  {/* {tableExample.map((item, index) => (
+                    <CTableRow v-for="item in tableItems" key={index}> */}
+                  {adminDashboardStats.top_selling_products.map((item, index) => (
+                    <CTableRow key={index}>
                       <CTableDataCell className="text-center">
-                        <CAvatar size="md" src={item.avatar.src} status={item.avatar.status} />
+                        { item.id }
                       </CTableDataCell>
                       <CTableDataCell>
-                        <div>{item.user.name}</div>
-                        <div className="small text-body-secondary text-nowrap">
-                          <span>{item.user.new ? 'New' : 'Recurring'}</span> | Registered:{' '}
-                          {item.user.registered}
+                        {/* <div className="border rounded p-1 d-inline-block"> */}
+                        <div className="d-inline-block justify-content-center ">
+                          <img
+                            src={item.primary_image}
+                            alt={item.name}
+                            style={{ width: '48px', height: '48px', objectFit: 'contain', borderRadius: '6px' }}
+                          />
                         </div>
                       </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.country.flag} title={item.country.name} />
+                      <CTableDataCell>
+                        <div>{item.name}</div>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <div className="d-flex justify-content-between text-nowrap">
-                          <div className="fw-semibold">{item.usage.value}%</div>
-                          <div className="ms-3">
-                            <small className="text-body-secondary">{item.usage.period}</small>
-                          </div>
-                        </div>
-                        <CProgress thin color={item.usage.color} value={item.usage.value} />
+                        Rs. {parseFloat(item.price).toFixed(2).toLocaleString()}
+                        {/* <CProgress thin color={item.usage.color} value={item.usage.value} /> */}
                       </CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CIcon size="xl" icon={item.payment.icon} />
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <div className="small text-body-secondary text-nowrap">Last login</div>
-                        <div className="fw-semibold text-nowrap">{item.activity}</div>
+                      {/* <CTableDataCell>
+                        <div>{item.category_id}</div>
+                      </CTableDataCell> */}
+                      <CTableDataCell >
+                        <div>{item.total_sold}</div>
                       </CTableDataCell>
                     </CTableRow>
                   ))}
