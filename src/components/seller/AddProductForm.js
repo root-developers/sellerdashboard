@@ -103,9 +103,9 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
       case 'price':
         if (!value) {
           error = 'Price is required'
-        } else if (isNaN(value) || parseFloat(value) <= 0) {
+        } else if (isNaN(value) || parseFloat(value).toFixed(2) <= 0) {
           error = 'Price must be greater than 0'
-        } else if (parseFloat(value) > 1000000) {
+        } else if (parseFloat(value).toFixed(2) > 1000000) {
           error = 'Price must not exceed 1,000,000'
         } else if (value.includes('.') && value.split('.')[1].length > 2) {
           error = 'Price can only have up to two decimal places (e.g., 12.99)'
