@@ -1,5 +1,5 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import SimpleBar from 'simplebar-react'
@@ -7,17 +7,48 @@ import 'simplebar-react/dist/simplebar.min.css'
 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
+// Custom NavGroup to handle open/close state
+const CustomNavGroup = ({ children, toggler, defaultOpen, ...rest }) => {
+  const [visible, setVisible] = useState(defaultOpen)
+
+  return (
+    <div className={`nav-group ${visible ? 'show' : ''}`} {...rest}>
+      <a
+        className="nav-link nav-group-toggle"
+        href="#"
+        onClick={(e) => {
+          e.preventDefault()
+          setVisible(!visible)
+        }}
+      >
+        {toggler}
+      </a>
+      <ul className="nav-group-items">{children}</ul>
+    </div>
+  )
+}
+
+CustomNavGroup.propTypes = {
+  children: PropTypes.node,
+  toggler: PropTypes.node,
+  defaultOpen: PropTypes.bool,
+}
+
 export const AppSidebarNav = ({ items }) => {
+  const location = useLocation()
+
   const navLink = (name, icon, badge, indent = false) => {
     return (
       <>
-        {icon
-          ? icon
-          : indent && (
-              <span className="nav-icon">
-                <span className="nav-icon-bullet"></span>
-              </span>
-            )}
+        {icon ? (
+          icon
+        ) : (
+          indent && (
+            <span className="nav-icon">
+              <span className="nav-icon-bullet"></span>
+            </span>
+          )
+        )}
         {name && name}
         {badge && (
           <CBadge color={badge.color} className="ms-auto" size="sm">
@@ -29,7 +60,7 @@ export const AppSidebarNav = ({ items }) => {
   }
 
   const navItem = (item, index, indent = false) => {
-    const { component, name, badge, icon, ...rest } = item
+    const { component, name, badge, icon, allowedRoles, ...rest } = item
     const Component = component
     return (
       <Component as="div" key={index}>
@@ -48,15 +79,30 @@ export const AppSidebarNav = ({ items }) => {
     )
   }
 
+  // Function to check if any item in the group is active
+  const isGroupActive = (items) => {
+    return items?.some((item) => {
+      if (item.items) return isGroupActive(item.items)
+      return item.to && location.pathname.startsWith(item.to)
+    })
+  }
+
   const navGroup = (item, index) => {
-    const { component, name, icon, items, to, ...rest } = item
-    const Component = component
+    const { component, name, icon, items, to, allowedRoles, ...rest } = item
+
+    const isOpen = isGroupActive(items) // Open if any child is active
+
     return (
-      <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
+      <CustomNavGroup
+        key={index}
+        toggler={navLink(name, icon)}
+        defaultOpen={isOpen}
+        {...rest}
+      >
         {items?.map((item, index) =>
           item.items ? navGroup(item, index) : navItem(item, index, true),
         )}
-      </Component>
+      </CustomNavGroup>
     )
   }
 
