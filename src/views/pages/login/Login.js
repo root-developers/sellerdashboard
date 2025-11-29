@@ -80,7 +80,7 @@ const Login = () => {
 
     try {
       // API call to login
-      const response = await axios.post(`${Config.apiUrl}/auth/login`, {
+      const response = await axios.post(`${Config.baseUrl}/auth/login`, {
         email: formData.email.trim(),
         password: formData.password
       })
@@ -91,9 +91,9 @@ const Login = () => {
           token: response.data.data.token
         }
 
-        // Check if user is a seller
-        if (userData.role !== Config.userType.SELLER) {
-          setError('Access denied. This portal is for sellers only.')
+        // Check if the user is a seller or admin
+        if (userData.role !== Config.userType.SELLER && userData.role !== Config.userType.ADMIN) {
+          setError('Access denied. This portal is for sellers and the admin only.')
           setIsLoading(false)
           return
         }
@@ -102,7 +102,8 @@ const Login = () => {
         dispatch(Save_User(userData))
 
         // Navigate to dashboard
-        navigate('/dashboard')
+        // navigate('/dashboard')
+        {userData.role === Config.userType.ADMIN ? navigate('/admin-dashboard') : navigate('/seller-dashboard')}
       } else {
         setError(response.data?.message || 'Login failed. Please check your credentials.')
       }
@@ -133,7 +134,7 @@ const Login = () => {
                 <CCardBody>
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
-                    <p className="text-body-secondary">Sign In to your seller account</p>
+                    <p className="text-body-secondary">Sign in to your account</p>
                     
                     {error && (
                       <CAlert color="danger" dismissible onClose={() => setError('')}>
@@ -183,7 +184,6 @@ const Login = () => {
                           {isLoading ? (
                             <>
                               <CSpinner size="sm" className="me-2" />
-                              Logging in...
                             </>
                           ) : (
                             'Login'

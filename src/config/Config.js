@@ -1,4 +1,5 @@
 const mainDomain = "https://kuality.co.in/";
+const baseUrl = "https://multivendorplatform.onrender.com/";
 
 const GetAccessToken = () => {
   const user = localStorage.getItem("user")
@@ -20,12 +21,12 @@ const GetUserId = () => {
 };
 
 const Config = {
-  AxiosConfig: {
+ AxiosConfig: () => ({
     headers: {
       authorization: `${GetAccessToken()}`,
       id: GetUserId(),
     },
-  },
+  }),
 
   userType: {
     ADMIN: 'admin',
@@ -34,6 +35,7 @@ const Config = {
   },
   domain: mainDomain,
   apiUrl: mainDomain + "api",
+  baseUrl: baseUrl + "api",
   sessionExpiredTime: 15, // in minutes
   idleTime: 15, // in mins
   

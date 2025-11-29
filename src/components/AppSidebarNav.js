@@ -92,6 +92,7 @@ export const AppSidebarNav = ({ items }) => {
 
     const isOpen = isGroupActive(items) // Open if any child is active
 
+    const Component = component
     return (
       <CustomNavGroup
         key={index}
