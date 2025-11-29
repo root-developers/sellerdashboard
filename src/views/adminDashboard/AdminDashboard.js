@@ -216,7 +216,7 @@ const AdminDashboard = () => {
     <>
       <WidgetsDropdown className="mb-4" stats={adminDashboardStats} />
       <CCard className="mb-4">
-        <CCardBody>
+        {/* <CCardBody>
           <CRow>
             <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
             </CCol>
           </CRow>
           <AdminMainChart />
-        </CCardBody>
+        </CCardBody> */}
         {/* <CCardFooter>
           <CRow
             xs={{ cols: 1, gutter: 4 }}
