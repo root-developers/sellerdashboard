@@ -67,7 +67,7 @@ const AppSidebar = () => {
               item.to === '/management/orders' ||
               item.to === '/management/profit' ||
               item.to === '/management/revenue' ||
-              item.to === '/management/contact',
+              item.to === '/management/contact'
           )
         } else if (role === Config.userType.ADMIN) {
           accessibleItems = navItem.items.filter(
@@ -77,7 +77,9 @@ const AppSidebar = () => {
               item.to === '/management/profit' ||
               item.to === '/management/revenue' ||
               item.to === '/management/contact' ||
-              item.to === '/management/all-sellers')
+              item.to === '/management/all-sellers' ||
+              item.to === '/management/returns&refunds',
+          )
         }
 
         if (accessibleItems.length > 0) {

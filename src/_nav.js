@@ -29,6 +29,7 @@ import {
   cilApplications,
   cilColorPalette,
   cilContrast,
+  cilLoop,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -80,6 +81,13 @@ const _nav = [
         name: 'All Sellers',
         to: '/management/all-sellers',
         icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+        allowedRoles: [Config.userType.ADMIN],
+      },
+      {
+        component: CNavItem,
+        name: 'Returns & Refunds',
+        to: '/management/returns&refunds',
+        icon: <CIcon icon={cilLoop} customClassName="nav-icon" />,
         allowedRoles: [Config.userType.ADMIN],
       },
       {
