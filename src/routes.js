@@ -1,8 +1,11 @@
 import React from 'react'
 
-const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+// const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const SellerDashboard = React.lazy(() => import('./views/sellerDashboard/SellerDashboard'))
+const AdminDashboard = React.lazy(() => import('./views/adminDashboard/AdminDashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const Profile = React.lazy(() => import('./views/pages/profile/Profile'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -50,10 +53,45 @@ const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
+// Management
+const Management = React.lazy(() => import('./views/management/Management'))
+const Products = React.lazy(() => import('./views/management/products/Products'))
+const Orders = React.lazy(() => import('./views/management/orders/Orders'))
+const Profit = React.lazy(() => import('./views/management/profit/Profit'))
+const Revenue = React.lazy(() => import('./views/management/revenue/Revenue'))
+const ContactUs = React.lazy(() => import('./views/management/contact/ContactUs'))
+const AllSellers = React.lazy(() => import('./views/management/allSellers/AllSellers'))
+const ReturnsAndRefunds = React.lazy(() => import('./views/management/returnsAndRefunds/ReturnsAndRefunds'))
+
+// UI Management
+const UIManagement = React.lazy(() => import('./views/uiManagement/UIManagement'))
+const OfferBanners = React.lazy(() => import('./views/uiManagement/offerBanners/OfferBanners'))
+const MiscBanners = React.lazy(() => import('./views/uiManagement/miscBanners/MiscBanners'))
+const Categories = React.lazy(() => import('./views/uiManagement/categories/Categories'))
+const Carousel = React.lazy(() => import('./views/uiManagement/carousel/Carousel'))
+const NavbarThemes = React.lazy(() => import('./views/uiManagement/navbarThemes/NavbarThemes'))
+const Leads = React.lazy(() => import('./views/uiManagement/leads/Leads'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  // { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/seller-dashboard', name: 'SellerDashboard', element: SellerDashboard },
+  { path: '/admin-dashboard', name: 'AdminDashboard', element: AdminDashboard },
+  { path: '/management', name: 'Management', element: Management, exact: true },
+  { path: '/management/products', name: 'Products', element: Products },
+  { path: '/management/orders', name: 'Orders', element: Orders },
+  { path: '/management/profit', name: 'Profit', element: Profit },
+  { path: '/management/revenue', name: 'Revenue', element: Revenue },
+  { path: '/management/contact', name: 'Contact Us', element: ContactUs },
+  { path: '/management/all-sellers', name: 'All Sellers', element: AllSellers },
+  { path: '/management/returns&refunds', name: 'Returns & Refunds', element: ReturnsAndRefunds },
+  { path: '/ui-management', name: 'UI Management', element: UIManagement, exact: true },
+  { path: '/ui-management/offer-banners', name: 'Offer Banners', element: OfferBanners },
+  { path: '/ui-management/misc-banners', name: 'Misc Banners', element: MiscBanners },
+  { path: '/ui-management/categories', name: 'Categories', element: Categories },
+  { path: '/ui-management/carousel', name: 'Carousel', element: Carousel },
+  { path: '/ui-management/navbar-themes', name: 'Navbar Themes', element: NavbarThemes },
+  { path: '/ui-management/leads', name: 'Leads', element: Leads },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
@@ -97,6 +135,7 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
+  { path: '/profile', name: 'Profile', element: Profile },
 ]
 
 export default routes
