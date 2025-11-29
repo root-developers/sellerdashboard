@@ -61,6 +61,7 @@ const Profit = React.lazy(() => import('./views/management/profit/Profit'))
 const Revenue = React.lazy(() => import('./views/management/revenue/Revenue'))
 const ContactUs = React.lazy(() => import('./views/management/contact/ContactUs'))
 const AllSellers = React.lazy(() => import('./views/management/allSellers/AllSellers'))
+const ReturnsAndRefunds = React.lazy(() => import('./views/management/returnsAndRefunds/ReturnsAndRefunds'))
 
 // UI Management
 const UIManagement = React.lazy(() => import('./views/uiManagement/UIManagement'))
@@ -83,6 +84,7 @@ const routes = [
   { path: '/management/revenue', name: 'Revenue', element: Revenue },
   { path: '/management/contact', name: 'Contact Us', element: ContactUs },
   { path: '/management/all-sellers', name: 'All Sellers', element: AllSellers },
+  { path: '/management/returns&refunds', name: 'Returns & Refunds', element: ReturnsAndRefunds },
   { path: '/ui-management', name: 'UI Management', element: UIManagement, exact: true },
   { path: '/ui-management/offer-banners', name: 'Offer Banners', element: OfferBanners },
   { path: '/ui-management/misc-banners', name: 'Misc Banners', element: MiscBanners },
