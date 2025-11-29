@@ -13,12 +13,12 @@ import {
   CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions, cilPencil, cilTrash } from '@coreui/icons'
+import { cilOptions, cilPencil, cilTrash, cilUser } from '@coreui/icons'
 import Config from '../../config/Config'
 
 const textStyle = { fontSize: '13px', color: 'black', fontWeight: '400', maxWidth: '200px', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
-const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
+const SellerProductTableRow = ({ product, onRefresh, onEdit, onAssign }) => {
   const [isDeleting, setIsDeleting] = useState(false)
   // const [isEditing, setIsEditing] = useState(false)
   const user = useSelector((state) => state.UserReducer.user)
@@ -162,6 +162,15 @@ const SellerProductTableRow = ({ product, onRefresh, onEdit }) => {
               <CIcon icon={cilPencil} className="me-2" />
               Edit
             </CDropdownItem>
+            {user?.role === Config.userType.ADMIN && (
+              <CDropdownItem
+                onClick={() => onAssign(product)}
+                style={textStyle}
+                className='text-black'>
+                <CIcon icon={cilUser} className="me-2" />
+                Allot to seller
+              </CDropdownItem>
+            )}
             <CDropdownItem
               onClick={handleDelete}
               disabled={isDeleting}

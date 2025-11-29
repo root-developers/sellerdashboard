@@ -20,7 +20,7 @@ const headerStyle = {
   overflow: 'hidden',
 }
 
-const SellerProductTable = ({ products, onRefresh, onEdit }) => {
+const SellerProductTable = ({ products, onRefresh, onEdit, onAssign }) => {
   const finalProducts = products.data?.products || products || []
 
   return (
@@ -75,6 +75,7 @@ const SellerProductTable = ({ products, onRefresh, onEdit }) => {
                 product={product}
                 onRefresh={onRefresh}
                 onEdit={onEdit}
+                onAssign={onAssign}
               />
             ))
           ) : (
