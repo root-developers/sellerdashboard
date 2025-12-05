@@ -15,7 +15,22 @@ import {
   CSpinner,
   CBadge,
   CButton,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CForm,
+  CFormLabel,
+  CFormSelect,
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilOptions } from '@coreui/icons'
+import { toast } from 'react-toastify'
 import Config from '../../../config/Config'
 
 const headerStyle = {
@@ -43,6 +58,12 @@ const ReturnsAndRefunds = () => {
   const [returnsData, setReturnsData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [showStatusModal, setShowStatusModal] = useState(false)
+  const [selectedReturn, setSelectedReturn] = useState(null)
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [statusUpdate, setStatusUpdate] = useState({
+    status: '',
+  })
 
   // Fetch returns data
   useEffect(() => {
@@ -68,6 +89,49 @@ const ReturnsAndRefunds = () => {
     }
   }
 
+  // Update Return Status API Call
+  const updateReturnStatus = async () => {
+    if (!selectedReturn || !statusUpdate.status) return
+
+    try {
+      setIsUpdating(true)
+      const response = await axios.put(
+        `${Config.baseUrl}/returns/${selectedReturn.id}`,
+        {
+          status: statusUpdate.status,
+        },
+        Config.AxiosConfig()
+      )
+
+      if (response.data && response.data.success) {
+        toast.success('Return request updated successfully')
+        fetchReturns() // Refresh list to show new status
+        handleCloseModal()
+      } else {
+        toast.error(response.data?.message || 'Failed to update status')
+      }
+    } catch (err) {
+      console.error('Error updating return status:', err)
+      toast.error(err.response?.data?.message || 'An error occurred while updating status.')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleOpenModal = (item) => {
+    setSelectedReturn(item)
+    setStatusUpdate({
+      status: item.status || 'pending',
+    })
+    setShowStatusModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowStatusModal(false)
+    setSelectedReturn(null)
+    setStatusUpdate({ status: '' })
+  }
+
   // Function to format date string
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
@@ -86,7 +150,7 @@ const ReturnsAndRefunds = () => {
   const getStatusBadge = (status) => {
     const statusLower = (status || '').toLowerCase()
     let color = 'secondary'
-    
+
     switch (statusLower) {
       case 'approved':
         color = 'success'
@@ -95,9 +159,9 @@ const ReturnsAndRefunds = () => {
         color = 'danger'
         break
       case 'pending':
-        color = 'warning'
+        color = 'secondary'
         break
-      case 'returned':
+      case 'completed':
         color = 'success'
         break
       default:
@@ -105,7 +169,7 @@ const ReturnsAndRefunds = () => {
     }
 
     return (
-      <CBadge 
+      <CBadge
         color={color}
         style={{ fontSize: '11px', fontWeight: '500', padding: '4px 8px', textTransform: 'capitalize' }}
       >
@@ -122,7 +186,7 @@ const ReturnsAndRefunds = () => {
       </div>
     )
   }
-  
+
   if (error) {
     return (
       <CCard className="mb-4">
@@ -161,6 +225,7 @@ const ReturnsAndRefunds = () => {
                     <CTableHeaderCell style={headerStyle} className="text-center">Images</CTableHeaderCell>
                     <CTableHeaderCell style={headerStyle}>Created At</CTableHeaderCell>
                     <CTableHeaderCell style={headerStyle}>Updated At</CTableHeaderCell>
+                    <CTableHeaderCell style={headerStyle} className="text-center">Actions</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -186,9 +251,9 @@ const ReturnsAndRefunds = () => {
                           <span style={textStyle}>{item.reason}</span>
                         </CTableDataCell>
                         <CTableDataCell>
-                           <span style={textStyle} title={item.description}>
-                             {item.description || '-'}
-                           </span>
+                          <span style={textStyle} title={item.description}>
+                            {item.description || '-'}
+                          </span>
                         </CTableDataCell>
                         <CTableDataCell className="text-center">
                           {getStatusBadge(item.status)}
@@ -202,16 +267,28 @@ const ReturnsAndRefunds = () => {
                           <span style={textStyle}>{item.images ? item.images.length : 0}</span>
                         </CTableDataCell>
                         <CTableDataCell>
-                           <span style={textStyle}>{formatDate(item.createdAt)}</span>
+                          <span style={textStyle}>{formatDate(item.createdAt)}</span>
                         </CTableDataCell>
                         <CTableDataCell>
-                           <span style={textStyle}>{formatDate(item.updatedAt)}</span>
+                          <span style={textStyle}>{formatDate(item.updatedAt)}</span>
+                        </CTableDataCell>
+                        <CTableDataCell className="text-center">
+                          <CDropdown alignment="end">
+                            <CDropdownToggle color="ghost" size="sm" caret={false}>
+                              <CIcon icon={cilOptions} />
+                            </CDropdownToggle>
+                            <CDropdownMenu>
+                              <CDropdownItem onClick={() => handleOpenModal(item)} style={{ cursor: 'pointer' }}>
+                                Update Status
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
                         </CTableDataCell>
                       </CTableRow>
                     ))
                   ) : (
                     <CTableRow>
-                      <CTableDataCell colSpan="11" className="text-center py-4" style={{ fontSize: '14px', fontWeight: '400', color: '#6c757d' }}>
+                      <CTableDataCell colSpan="12" className="text-center py-4" style={{ fontSize: '14px', fontWeight: '400', color: '#6c757d' }}>
                         No return requests found.
                       </CTableDataCell>
                     </CTableRow>
@@ -222,6 +299,70 @@ const ReturnsAndRefunds = () => {
           </CCardBody>
         </CCard>
       </CCol>
+
+      {/* Status Update Modal */}
+      <CModal visible={showStatusModal} onClose={handleCloseModal}>
+        <CModalHeader>
+          <CModalTitle>Update Return Status</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {selectedReturn && (
+            <CForm>
+              <div className="p-3 mb-3 bg-body-tertiary rounded">
+                <div className="d-flex flex-wrap gap-4 mb-2">
+                  <div><strong>ID:</strong> {selectedReturn.id}</div>
+                  <div><strong>Order ID:</strong> {selectedReturn.order_id}</div>
+                  <div><strong>Product ID:</strong> {selectedReturn.product_id}</div>
+                </div>
+                <div className="mb-2">
+                  <strong>Product Name:</strong> {selectedReturn.product?.name}
+                </div>
+                <div className="mb-2">
+                  <strong>Refund Amount:</strong> Rs. {selectedReturn.refund_amount}
+                </div>
+                <div className="mb-2">
+                  <strong>Reason:</strong> {selectedReturn.reason}
+                </div>
+                <div className="mb-2">
+                  <strong>Description:</strong>
+                  <div>
+                    {selectedReturn.description}
+                  </div>
+                </div>
+                <div className="mb-2">
+                  <strong>Images:</strong>
+                  <div>
+                    {selectedReturn.images.map((image, index) => (
+                      <img key={index} src={image} alt={`Return Image ${index + 1}`} style={{ maxWidth: '100px', marginRight: '10px' }} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <CFormLabel htmlFor="statusSelect"><strong>New Status</strong></CFormLabel>
+                <CFormSelect
+                  id="statusSelect"
+                  value={statusUpdate.status}
+                  onChange={(e) => setStatusUpdate({ ...statusUpdate, status: e.target.value })}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="completed">Completed</option>
+                </CFormSelect>
+              </div>
+            </CForm>
+          )}
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={handleCloseModal} disabled={isUpdating}>
+            Cancel
+          </CButton>
+          <CButton color="primary" onClick={updateReturnStatus} disabled={isUpdating}>
+            {isUpdating ? <CSpinner size="sm" /> : 'Save Changes'}
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </CRow>
   )
 }
