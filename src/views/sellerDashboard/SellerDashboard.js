@@ -271,7 +271,7 @@ const SellerDashboard = () => {
       <CRow>
         <CCol xs>
           <CCard className="mb-4">
-            <CCardHeader>Top Selling Products</CCardHeader>
+            <CCardHeader>Top 5 Selling Products</CCardHeader>
             <CCardBody>
               {/* <CRow>
                 <CCol xs={12} md={6} xl={6}>

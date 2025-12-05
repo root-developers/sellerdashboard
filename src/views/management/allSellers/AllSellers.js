@@ -96,17 +96,6 @@ const SellerRow = React.memo(({ seller }) => {
       <CTableDataCell style={{ width: '50px' }}>
         <span style={subTextStyle}>{seller.id}</span>
       </CTableDataCell>
-      <CTableDataCell className="text-center" style={{ width: '60px' }}>
-        <CAvatar
-          size="md"
-          color="primary"
-          textColor="white"
-          src={seller.profile_image || undefined}
-        >
-          {/* Fallback to initials if no profile image */}
-          {!seller.profile_image ? (seller.first_name || '?')[0].toUpperCase() : null}
-        </CAvatar>
-      </CTableDataCell>
       <CTableDataCell>
         <div style={subTextStyle}>{`${seller.first_name || ''} ${seller.last_name || ''}`}</div>
       </CTableDataCell>
@@ -307,12 +296,6 @@ const AllSellers = () => {
                 <CTableRow>
                   <CTableHeaderCell style={{ ...subHeaderStyle, width: '50px' }}>
                     ID
-                  </CTableHeaderCell>
-                  <CTableHeaderCell
-                    style={{ ...subHeaderStyle, width: '70px' }}
-                    className="text-center"
-                  >
-                    Profile Image
                   </CTableHeaderCell>
                   <CTableHeaderCell style={subHeaderStyle}>Seller Name</CTableHeaderCell>
                   <CTableHeaderCell style={subHeaderStyle}>Email</CTableHeaderCell>
