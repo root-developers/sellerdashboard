@@ -168,7 +168,7 @@ const AllSellers = () => {
       }
     } catch (err) {
       console.error('Error fetching sellers:', err)
-      setError(err.response?.data?.message || err.message || 'Failed to load sellers')
+      setError(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'Failed to load sellers')
       setSellers([])
       setPagination(null) // Reset pagination on error
     } finally {
