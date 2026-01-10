@@ -190,7 +190,7 @@ const Categories = () => {
       }
     } catch (err) {
       console.error('Error fetching categories:', err)
-      setError(err.response?.data?.message || 'Failed to load categories')
+      setError(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'Failed to load categories')
       setCategories([])
     } finally {
       setLoading(false)

@@ -83,7 +83,7 @@ const ReturnsAndRefunds = () => {
       }
     } catch (err) {
       console.error('Error fetching returns:', err)
-      setError(err.response?.data?.message || err.message || 'An error occurred while fetching returns.')
+      setError(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'An error occurred while fetching returns.')
     } finally {
       setLoading(false)
     }
@@ -112,7 +112,7 @@ const ReturnsAndRefunds = () => {
       }
     } catch (err) {
       console.error('Error updating return status:', err)
-      toast.error(err.response?.data?.message || 'An error occurred while updating status.')
+      toast.error(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'An error occurred while updating status.')
     } finally {
       setIsUpdating(false)
     }
