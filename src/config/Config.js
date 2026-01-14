@@ -1,5 +1,5 @@
 const mainDomain = "https://kuality.co.in/";
-const baseUrl = "https://kuality-server.onrender.com";
+const baseUrl = "https://kuality-server.onrender.com/";
 
 const GetAccessToken = () => {
   const user = localStorage.getItem("user")
