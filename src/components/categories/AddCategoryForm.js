@@ -23,6 +23,7 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
     description: '',
     slug: '',
     is_active: true,
+    sort_order: 0,
   })
   const [imageFile, setImageFile] = useState(null)
   const [errors, setErrors] = useState({})
@@ -48,6 +49,10 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
         else if (value.trim() && value.trim().length > 500)
           error = 'Description must not exceed 500 characters'
         break
+        case 'sort_order':
+        if (value === '' || value === null) error = 'Sort order is required'
+        else if (isNaN(value) || Number(value) < 0) error = 'Sort order must be a non-negative number'
+        break;
       case 'is_active':
         if (typeof value !== 'boolean') error = 'Axtive status must be true or false'
         break
@@ -103,10 +108,10 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
   }
 
   const isFormValid = () => {
-    const requiredFields = ['name', 'slug', 'is_active', 'description']
+    const requiredFields = ['name', 'slug', 'is_active', 'description', 'sort_order']
     for (const field of requiredFields) {
       if (formData[field] === null || formData[field] === undefined) return false
-      if (field !== 'is_active' && formData[field].toString().trim() === '') return false // boolean is_active 
+      if (field !== 'is_active' && field !== 'sort_order' && formData[field].toString().trim() === '') return false // boolean is_active 
       if (validateField(field, formData[field])) return false
     }
     if (imageError) return false
@@ -124,13 +129,13 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
 
     // Validate all fields
     const newErrors = {}
-    const fieldsToValidate = ['name', 'description', 'slug', 'is_active']
+    const fieldsToValidate = ['name', 'description', 'slug', 'is_active', 'sort_order']
     fieldsToValidate.forEach((field) => {
       const error = validateField(field, formData[field])
       if (error) newErrors[field] = error
     })
     setErrors(newErrors)
-    setTouched({ name: true, description: true, slug: true, is_active: true })
+    setTouched({ name: true, description: true, slug: true, is_active: true, sort_order: true })
 
     if (!imageFile) {
       setImageError('A category image is required.')
@@ -154,6 +159,7 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
       submitData.append('description', formData.description.trim())
       submitData.append('slug', formData.slug.trim())
       submitData.append('is_active', formData.is_active)
+      submitData.append('sort_order', formData.sort_order)
       submitData.append('image', imageFile)
 
       const response = await fetch(`${Config.baseUrl}/categories`, {
@@ -221,6 +227,28 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
               <div className="invalid-feedback d-block">{errors.slug}</div>
             )}
           </CCol>
+        </CRow>
+
+        <CRow className="mb-3">
+            <CCol md={12}>
+            <CFormLabel htmlFor="sort_order">
+                Sort Order <span className="text-danger">*</span>
+            </CFormLabel>
+            <CFormInput
+                type="number"
+                id="sort_order"
+                name="sort_order"
+                value={formData.sort_order}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                placeholder="0"
+                min="0"
+                invalid={touched.sort_order && !!errors.sort_order}
+            />
+            {touched.sort_order && errors.sort_order && (
+                <div className="invalid-feedback d-block">{errors.sort_order}</div>
+            )}
+            </CCol>
         </CRow>
 
         <CRow className="mb-3">

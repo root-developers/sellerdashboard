@@ -24,6 +24,7 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
     description: '',
     slug: '',
     is_active: true,
+    sort_order: 0,
   })
   const [imageFile, setImageFile] = useState(null)
   const [currentImage, setCurrentImage] = useState(null)
@@ -39,6 +40,7 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
         description: categoryToEdit.description || '',
         slug: categoryToEdit.slug || '',
         is_active: categoryToEdit.is_active || false,
+        sort_order: categoryToEdit.sort_order || 0,
       })
       setCurrentImage(categoryToEdit.image || null)
       // Clear all validation states
@@ -66,6 +68,11 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
         break
       case 'is_active':
         if (typeof value !== 'boolean') error = 'Active status must be true or false'
+        break
+      case 'sort_order':
+        if (value === '' || value === null) error = 'Sort order is required'
+        else if (isNaN(value) || Number(value) < 0)
+          error = 'Sort order must be a non-negative number'
         break
       case 'description':
         if (value === '' || value === null) error = 'Description is required'
@@ -126,10 +133,15 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
 
   // Updated isFormValid to make image compulsory
   const isFormValid = () => {
-    const requiredFields = ['name', 'description', 'slug', 'is_active']
+    const requiredFields = ['name', 'description', 'slug', 'is_active', 'sort_order']
     for (const field of requiredFields) {
       if (formData[field] === null || formData[field] === undefined) return false
-      if (field !== 'is_active' && formData[field].toString().trim() === '') return false
+      if (
+        field !== 'is_active' &&
+        field !== 'sort_order' &&
+        formData[field].toString().trim() === ''
+      )
+        return false
       if (validateField(field, formData[field])) return false
     }
     if (imageError) return false // Check for upload errors
@@ -155,19 +167,19 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
 
     // Run validation on all fields
     const newErrors = {}
-    const fieldsToValidate = ['name', 'description', 'slug', 'is_active']
+    const fieldsToValidate = ['name', 'description', 'slug', 'is_active', 'sort_order']
     fieldsToValidate.forEach((field) => {
       const error = validateField(field, formData[field])
       if (error) newErrors[field] = error
     })
     setErrors(newErrors)
-    setTouched({ name: true, description: true, slug: true, is_active: true })
+    setTouched({ name: true, description: true, slug: true, is_active: true, sort_order: true })
 
     if (Object.keys(newErrors).length > 0) {
       setFormError('Please review the form. Some fields have errors.')
       return
     }
-    
+
     // Re-check image validity on submit
     if (!currentImage && !imageFile) {
       setImageError('A category image is required.')
@@ -187,17 +199,18 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
       submitData.append('description', formData.description.trim())
       submitData.append('slug', formData.slug.trim())
       submitData.append('is_active', formData.is_active)
+      submitData.append('sort_order', formData.sort_order)
       if (imageFile) {
         submitData.append('image', imageFile) // New image file
       } else {
-        submitData.append('image', currentImage) // existing image 
+        submitData.append('image', currentImage) // existing image
       }
 
       const response = await fetch(`${Config.baseUrl}/categories/${categoryToEdit.id}`, {
         method: 'PUT',
         headers: {
-          'authorization': user.token,
-          'id': user.userId || user.id,
+          authorization: user.token,
+          id: user.userId || user.id,
         },
         body: submitData,
       })
@@ -254,6 +267,28 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
           />
           {touched.slug && errors.slug && (
             <div className="invalid-feedback d-block">{errors.slug}</div>
+          )}
+        </CCol>
+      </CRow>
+
+      <CRow className="mb-3">
+        <CCol md={12}>
+          <CFormLabel htmlFor="edit-sort_order">
+            Sort Order <span className="text-danger">*</span>
+          </CFormLabel>
+          <CFormInput
+            type="number"
+            id="edit-sort_order"
+            name="sort_order"
+            value={formData.sort_order}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            placeholder="0"
+            min="0"
+            invalid={touched.sort_order && !!errors.sort_order}
+          />
+          {touched.sort_order && errors.sort_order && (
+            <div className="invalid-feedback d-block">{errors.sort_order}</div>
           )}
         </CCol>
       </CRow>
