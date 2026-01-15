@@ -328,7 +328,7 @@ const Orders = () => {
             }
         } catch (err) {
             console.error('Error fetching orders:', err)
-            setError(err.response?.data?.message || err.message || 'Failed to load orders')
+            setError(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'Failed to load orders')
             setOrders([])
             setPagination(null) // Reset pagination on error
         } finally {
@@ -435,7 +435,7 @@ const Orders = () => {
             }
         } catch (err) {
             console.error('Error updating order status:', err)
-            toast.error(err.response?.data?.message || err.message || 'Failed to update order status')
+            toast.error(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'Failed to update order status')
         }
     }
 

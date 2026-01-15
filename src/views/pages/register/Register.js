@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
+// import isEmail from 'validator/lib/isEmail'
 import {
   CButton,
   CCard,
@@ -23,8 +24,8 @@ import Config from '../../../config/Config'
 import { Save_User } from '../../../Redux/actions'
 
 // Validation patterns
-const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i
+const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])[\S]{10,64}$/
 const phoneFormat = /^(\+91)?[6-9]\d{9}$/
 
 const Register = () => {
@@ -86,6 +87,7 @@ const Register = () => {
       case 'email':
         if (!value.trim()) return 'Please enter your email address'
         if (!emailFormat.test(value)) return 'Please enter a valid email address'
+        // if (!isEmail(value)) return 'Please enter a valid email address'
         return ''
 
       case 'password':
@@ -214,6 +216,7 @@ const Register = () => {
     formData.phone.trim() &&
     formData.companyName.trim() &&
     emailFormat.test(formData.email) &&
+    // isEmail(formData.email) &&
     passwordFormat.test(formData.password) &&
     agreeToTerms &&
     Object.keys(errors).filter((key) => key !== 'general').every((key) => !errors[key])

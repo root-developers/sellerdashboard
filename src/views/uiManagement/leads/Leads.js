@@ -61,7 +61,7 @@ const Leads = () => {
       }
     } catch (err) {
       console.error('Error fetching leads:', err)
-      setError(err.response?.data?.message || err.message || 'An error occurred while fetching leads.')
+      setError(err.response?.data?.errors && err.response.data.errors.length > 0 ? err.response.data.errors[0].message : 'An error occurred while fetching leads.')
     } finally {
       setLoading(false)
     }
