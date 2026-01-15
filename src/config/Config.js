@@ -1,5 +1,7 @@
+
 const mainDomain = "https://kuality-dev.onrender.com/";
 const baseUrl = "https://multivendorplatform.onrender.com/";
+
 
 const GetAccessToken = () => {
   const user = localStorage.getItem("user")
