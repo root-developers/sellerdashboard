@@ -57,7 +57,12 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
 
         const data = await response.json()
 
-        setCategories(data.data.categories || [])
+        const activeCategories = (data.data.categories || []).filter(
+          (cat) => cat.is_active === true,
+        )
+        setCategories(activeCategories)
+
+        // setCategories(data.data.categories || [])
       } catch (error) {
         console.error('Error fetching categories:', error)
         setCategoriesError('Failed to load categories.')
@@ -238,7 +243,14 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
 
   // Check if form is valid
   const isFormValid = () => {
-    const requiredFields = ['name', 'description', 'price', 'category_id', 'stock_quantity', 'brand']
+    const requiredFields = [
+      'name',
+      'description',
+      'price',
+      'category_id',
+      'stock_quantity',
+      'brand',
+    ]
 
     // Check if all required fields are filled
     for (const field of requiredFields) {
@@ -482,9 +494,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
               disabled={categoriesLoading}
               invalid={touched.category_id && !!errors.category_id}
             >
-              <option value="">
-                {categoriesLoading ? 'Loading...' : 'Select a category'}
-              </option>
+              <option value="">{categoriesLoading ? 'Loading...' : 'Select a category'}</option>
               {!categoriesLoading &&
                 !categoriesError &&
                 categories.map((category) => (
