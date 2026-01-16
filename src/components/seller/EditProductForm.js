@@ -74,7 +74,10 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
 
         const data = await response.json()
 
-        setCategories(data.data.categories || [])
+        const activeCategories = (data.data.categories || []).filter(
+          (cat) => cat.is_active === true,
+        )
+        setCategories(activeCategories)
       } catch (error) {
         console.error('Error fetching categories:', error)
         setCategoriesError('Failed to load categories.')
@@ -230,7 +233,14 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
 
   // Check if form is valid
   const isFormValid = () => {
-    const requiredFields = ['name', 'description', 'price', 'category_id', 'stock_quantity', 'brand']
+    const requiredFields = [
+      'name',
+      'description',
+      'price',
+      'category_id',
+      'stock_quantity',
+      'brand',
+    ]
 
     // Check if all required fields are filled
     for (const field of requiredFields) {
@@ -352,7 +362,8 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
         </CCol>
 
         <CCol md={6}>
-          <CFormLabel htmlFor="edit-brand">Brand <span className="text-danger">*</span>
+          <CFormLabel htmlFor="edit-brand">
+            Brand <span className="text-danger">*</span>
           </CFormLabel>
           <CFormInput
             type="text"
@@ -375,7 +386,9 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
 
       <CRow className="mb-3">
         <CCol xs={12}>
-          <CFormLabel htmlFor="edit-description">Description <span className="text-danger">*</span></CFormLabel>
+          <CFormLabel htmlFor="edit-description">
+            Description <span className="text-danger">*</span>
+          </CFormLabel>
           <CFormTextarea
             id="edit-description"
             name="description"
@@ -451,11 +464,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
             disabled={categoriesLoading}
             invalid={touched.category_id && !!errors.category_id}
           >
-            <option value="">
-              {categoriesLoading
-                ? 'Loading...'
-                : 'Select a category'}
-            </option>
+            <option value="">{categoriesLoading ? 'Loading...' : 'Select a category'}</option>
             {!categoriesLoading &&
               !categoriesError &&
               categories.map((category) => (
@@ -471,7 +480,9 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
         </CCol>
 
         <CCol md={4}>
-          <CFormLabel htmlFor="edit-stock_quantity">Stock Quantity <span className="text-danger">*</span></CFormLabel>
+          <CFormLabel htmlFor="edit-stock_quantity">
+            Stock Quantity <span className="text-danger">*</span>
+          </CFormLabel>
           <CFormInput
             type="number"
             id="edit-stock_quantity"
