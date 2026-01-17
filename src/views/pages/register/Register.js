@@ -22,6 +22,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser, cilEnvelopeOpen, cilPhone, cilBuilding } from '@coreui/icons'
 import Config from '../../../config/Config'
 import { Save_User } from '../../../Redux/actions'
+import { EyeIcon, EyeSlashIcon } from '../../../components'
 
 // Validation patterns
 const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i
@@ -37,7 +38,11 @@ const Register = () => {
   useEffect(() => {
     if (user && user.token) {
       // navigate('/dashboard')
-      { userData.role === Config.userType.SELLER ? navigate('/seller-dashboard') : navigate('/admin-dashboard') }
+      {
+        userData.role === Config.userType.SELLER
+          ? navigate('/seller-dashboard')
+          : navigate('/admin-dashboard')
+      }
     }
   }, [user, navigate])
 
@@ -183,7 +188,11 @@ const Register = () => {
 
         // Navigate to dashboard
         // navigate('/dashboard')
-        { userData.role === Config.userType.SELLER ? navigate('/seller-dashboard') : navigate('/admin-dashboard') }
+        {
+          userData.role === Config.userType.SELLER
+            ? navigate('/seller-dashboard')
+            : navigate('/admin-dashboard')
+        }
       } else {
         setErrors({ general: response.data?.message || 'Registration failed. Please try again.' })
       }
@@ -219,7 +228,9 @@ const Register = () => {
     // isEmail(formData.email) &&
     passwordFormat.test(formData.password) &&
     agreeToTerms &&
-    Object.keys(errors).filter((key) => key !== 'general').every((key) => !errors[key])
+    Object.keys(errors)
+      .filter((key) => key !== 'general')
+      .every((key) => !errors[key])
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
@@ -233,7 +244,11 @@ const Register = () => {
                   <p className="text-body-secondary">Create your seller account</p>
 
                   {errors.general && (
-                    <CAlert color="danger" dismissible onClose={() => setErrors({ ...errors, general: '' })}>
+                    <CAlert
+                      color="danger"
+                      dismissible
+                      onClose={() => setErrors({ ...errors, general: '' })}
+                    >
                       {errors.general}
                     </CAlert>
                   )}
@@ -254,7 +269,9 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  {errors.firstName && <div className="text-danger small mb-3">{errors.firstName}</div>}
+                  {errors.firstName && (
+                    <div className="text-danger small mb-3">{errors.firstName}</div>
+                  )}
 
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
@@ -308,7 +325,9 @@ const Register = () => {
                       required
                     />
                   </CInputGroup>
-                  {errors.companyName && <div className="text-danger small mb-3">{errors.companyName}</div>}
+                  {errors.companyName && (
+                    <div className="text-danger small mb-3">{errors.companyName}</div>
+                  )}
 
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
@@ -326,16 +345,27 @@ const Register = () => {
                       required
                     />
                     <CInputGroupText
-                      style={{ cursor: 'pointer' }}
                       onClick={() => setShowPassword(!showPassword)}
+                      style={{ cursor: 'pointer', background: 'transparent' }}
+                      title={showPassword ? 'Hide password' : 'Show password'}
                     >
+                      {showPassword ? (
+                        <EyeSlashIcon style={{ width: '20px', height: '20px' }} />
+                      ) : (
+                        <EyeIcon style={{ width: '20px', height: '20px' }} />
+                      )}
                     </CInputGroupText>
                   </CInputGroup>
-                  {errors.password && <div className="text-danger small mb-3">{errors.password}</div>}
+                  {errors.password && (
+                    <div className="text-danger small mb-3">{errors.password}</div>
+                  )}
                   {formData.password && (
                     <div className="mb-4">
                       <small className="text-body-secondary">
-                        Password Strength: <span className={`text-${getPasswordStrengthColor()}`}>{getPasswordStrengthText()}</span>
+                        Password Strength:{' '}
+                        <span className={`text-${getPasswordStrengthColor()}`}>
+                          {getPasswordStrengthText()}
+                        </span>
                       </small>
                     </div>
                   )}
