@@ -323,7 +323,7 @@ const EditProductForm = ({ productToEdit, onProductUpdated, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to update product')
+        throw new Error(errorData.error || errorData.message || 'Failed to update product')
       }
 
       toast.success('Product updated successfully!')

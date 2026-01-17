@@ -170,7 +170,7 @@ const AddNavbarTheme = ({ onAdded, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create theme.')
+        throw new Error(errorData.error || errorData.message || 'Failed to create theme.')
       }
 
       toast.success('Theme created successfully!')

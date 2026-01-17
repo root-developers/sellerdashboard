@@ -186,7 +186,7 @@ const EditCarouselForm = ({ carouselToEdit, onUpdated, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to update carousel slide.')
+        throw new Error(errorData.error || errorData.message || 'Failed to update carousel slide.')
       }
 
       toast.success('Carousel slide updated successfully!')

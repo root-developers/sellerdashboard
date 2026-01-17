@@ -166,7 +166,7 @@ const AddCarouselForm = ({ onAdded, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create carousel slide.')
+        throw new Error(errorData.error || errorData.message || 'Failed to create carousel slide.')
       }
 
       toast.success('Carousel slide created successfully!')

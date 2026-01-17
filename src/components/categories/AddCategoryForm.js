@@ -173,7 +173,7 @@ const AddCategoryForm = ({ onAdded, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create category.')
+        throw new Error(errorData.error || errorData.message || 'Failed to create category.')
       }
 
       toast.success('Category created successfully!')

@@ -217,7 +217,7 @@ const EditCategoryForm = ({ categoryToEdit, onUpdated, onCancel }) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to update category.')
+        throw new Error(errorData.error || errorData.message || 'Failed to update category.')
       }
 
       toast.success('Category updated successfully!')
