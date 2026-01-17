@@ -21,6 +21,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import Config from '../../../config/Config'
 import { Save_User } from '../../../Redux/actions'
+import { EyeIcon, EyeSlashIcon } from '../../../components'
 
 const Login = () => {
   const dispatch = useDispatch()
@@ -28,10 +29,11 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   // Email validation
   const validateEmail = (email) => {
@@ -41,9 +43,9 @@ const Login = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
     // Clear error when user starts typing
     if (error) {
@@ -82,13 +84,13 @@ const Login = () => {
       // API call to login
       const response = await axios.post(`${Config.baseUrl}/auth/login`, {
         email: formData.email.trim(),
-        password: formData.password
+        password: formData.password,
       })
 
       if (response.data && response.data.success) {
         const userData = {
           ...response.data.data.user,
-          token: response.data.data.token
+          token: response.data.data.token,
         }
 
         // Check if the user is a seller or admin
@@ -103,22 +105,26 @@ const Login = () => {
 
         // Navigate to dashboard
         // navigate('/dashboard')
-        {userData.role === Config.userType.ADMIN ? navigate('/admin-dashboard') : navigate('/seller-dashboard')}
+        {
+          userData.role === Config.userType.ADMIN
+            ? navigate('/admin-dashboard')
+            : navigate('/seller-dashboard')
+        }
       } else {
         setError(response.data?.message || 'Login failed. Please check your credentials.')
       }
     } catch (error) {
       console.error('Login failed:', error)
       setError(
-        error.response?.data?.message || 
-        'Login failed. Please check your credentials and try again.'
+        error.response?.data?.message ||
+          'Login failed. Please check your credentials and try again.',
       )
     } finally {
       setIsLoading(false)
     }
   }
 
-  const isFormValid = 
+  const isFormValid =
     formData.email.trim() &&
     formData.password &&
     validateEmail(formData.email) &&
@@ -135,7 +141,7 @@ const Login = () => {
                   <CForm onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign in to your account</p>
-                    
+
                     {error && (
                       <CAlert color="danger" dismissible onClose={() => setError('')}>
                         {error}
@@ -146,10 +152,10 @@ const Login = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput 
+                      <CFormInput
                         type="email"
                         name="email"
-                        placeholder="Email Address" 
+                        placeholder="Email Address"
                         autoComplete="email"
                         value={formData.email}
                         onChange={handleInputChange}
@@ -162,7 +168,7 @@ const Login = () => {
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         name="password"
                         placeholder="Password"
                         autoComplete="current-password"
@@ -171,12 +177,23 @@ const Login = () => {
                         disabled={isLoading}
                         required
                       />
+                      <CInputGroupText
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: 'pointer', background: 'transparent' }}
+                        title={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? (
+                          <EyeSlashIcon style={{ width: '20px', height: '20px' }} />
+                        ) : (
+                          <EyeIcon style={{ width: '20px', height: '20px' }} />
+                        )}
+                      </CInputGroupText>
                     </CInputGroup>
-          
+
                     <CRow>
                       <CCol xs={6}>
-                        <CButton 
-                          color="primary" 
+                        <CButton
+                          color="primary"
                           className="px-4"
                           type="submit"
                           disabled={isLoading || !isFormValid}
@@ -191,11 +208,7 @@ const Login = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-end">
-                        <CButton 
-                          color="link" 
-                          className="px-0"
-                          disabled={isLoading}
-                        >
+                        <CButton color="link" className="px-0" disabled={isLoading}>
                           Forgot password?
                         </CButton>
                       </CCol>
@@ -208,8 +221,8 @@ const Login = () => {
                   <div>
                     <h2>Sign up</h2>
                     <p>
-                      Welcome to the seller dashboard. Manage your products, orders, and 
-                      grow your business with our powerful tools.
+                      Welcome to the seller dashboard. Manage your products, orders, and grow your
+                      business with our powerful tools.
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>
