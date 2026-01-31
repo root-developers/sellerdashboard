@@ -334,7 +334,7 @@ const AddProductForm = ({ onProductAdded, onCancel }) => {
       }
 
       const data = await response.json()
-      console.log('Product created:', data)
+      // console.log('Product created:', data)
 
       // Reset form
       setFormData({
